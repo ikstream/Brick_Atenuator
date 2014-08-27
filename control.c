@@ -79,6 +79,21 @@ get_device_data(unsigned int *working_devices, int nr_active_devices)
 	
 }
 
+void call_help(void)
+{
+	//print available options       
+	printf("-set time for attenuation duration with\n");
+	printf("\t-t <time in sec>\n");
+	printf("\r\n");
+	printf("-set attenuation stregth in dB with\n");
+	printf("\t-a <dB>\n");
+	printf("\r\n");
+	printf("-set attenuation form with\n");
+	printf("\t-f <ramp|sine|triangle>\n");
+
+	return;
+}
+
 int 
 get_parameters(int argc, char const *argv[])
 {
@@ -141,8 +156,7 @@ main(int argc, char const *argv[])
 		return -1;
 	}
 	if ((strncmp(argv[1], "-h", sizeof(argv[1]))) == 0) {
-		//print available options
-		printf("this is a stump for help\n");
+		call_help();	
 		return 0;
 	}
 
