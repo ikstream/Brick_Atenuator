@@ -6,6 +6,8 @@
 #include "LDAhid.h"
 
 #define FALSE 0
+#define TRUE !FALSE
+#define MIKRO_SEC(step_time) ((1 * step_time) / 100000)
 
 struct user_data ud;
 
@@ -78,24 +80,37 @@ get_device_data(unsigned int *working_devices, int nr_active_devices)
 	
 }
 
-void call_help(void)
+void
+call_help(void)
 {
-	//print available options       
-	printf("-set time for attenuation duration with\n");
-	printf("\t-t <time in sec>\n");
+	//print available options
+	printf("-set attenuation with\n");
+	printf("\t-a <attenuation in dB>\n");
 	printf("\r\n");
 
+	printf("-set time per step with\n");
+	printf("\t-step_time\n");
+	printf("\r\n");
+
+	// printf("-set time for attenuation duration with\n");
+	// printf("\t-t <time in sec>\n");
+	// printf("\r\n");
+
 	printf("-set starting attenuation stregth in dB with\n");
-	printf("\t-min <dB>\n");
+	printf("\t-start <dB>\n");
 	printf("\r\n");
 
 	printf("-set end attenuation stregth in dB with\n");
-	printf("\t-max <dB>\n");
+	printf("\t-end <dB>\n");
 	printf("\r\n");
 
 	printf("-set attenuation form with\n");
 	printf("\t-f <ramp|sine|triangle>\n");
 	printf("\r\n");
+
+  	printf("repeat operation until canceled by user\n");
+  	printf("\tcont\n");
+  	printf("\r\n");
 
 	printf("-to show this overview use\n");
 	printf("\t-h\n");
@@ -114,17 +129,25 @@ get_parameters(int argc, char const *argv[])
 			printf("time for attenuation set to %d seconds.\n",
 				ud.atime);
 		}
-		if (strncmp(argv[i], "-step", sizeof(argv[i + 2])) == 0) {
+		if (strncmp(argv[i], "-step", sizeof(argv[i])) == 0) {
 			ud.ramp_steps = atoi(argv[i + 1]);
 			printf("ramp steps set to %d dB\n", ud.ramp_steps);
 		}
-		if (strncmp(argv[i], "-min", sizeof(argv[i])) == 0) {
-			ud.min_att = atoi(argv[i + 1]);
-			printf("minimal attenuation set to %d dB\n", ud.min_att);
+		if (strncmp(argv[i], "-step_time", sizeof(argv[i])) == 0) {
+			ud.step_time = atoi(argv[i + 1]);
+			printf("time per step set to %d mikroseconds\n", ud.step_time);
 		}
-		if (strncmp(argv[i], "-max", sizeof(argv[i])) == 0) {
-			ud.max_att = atoi(argv[i + 1]);
-			printf("minimal attenuation set to %d dB\n", ud.max_att);
+		if (strncmp(argv[i], "-start", sizeof(argv[i])) == 0) {
+			ud.start_att = atoi(argv[i + 1]);
+			printf("start attenuation set to %d dB\n", ud.start_att);
+		}
+		if (strncmp(argv[i], "-end", sizeof(argv[i])) == 0) {
+			ud.end_att = atoi(argv[i + 1]);
+			printf("end attenuation set to %d dB\n", ud.end_att);
+		}
+		if (strncmp(argv[i], "-a", sizeof(argv[i])) == 0) {
+			ud.attenuation = atoi(argv[i + 1]);
+			printf("attenuation set to %d dB\n", ud.attenuation);
 		}
 		if (strncmp(argv[i], "-f", sizeof(argv[i])) == 0) {
 			if (strncmp(argv[i + 1], "ramp",
@@ -147,6 +170,13 @@ get_parameters(int argc, char const *argv[])
 				printf("ues ramp, sine or triangle\n");
 			}
 		}
+		if (ud.ramp || ud.triangle){
+			if (strncmp(argv[i], "cont", sizeof(argv[i]))
+			    == 0) {
+				printf("continous behavior is set\n");
+				ud.cont = 1;
+			}
+		}
 		else {
 			printf("%s is no valid option\n", argv[i]);
 			printf("use -h option for available options\n");
@@ -159,10 +189,121 @@ get_parameters(int argc, char const *argv[])
 int 
 set_ramp(int id)
 {
-	fnLDA_SetRampStart(id, ud.min_att * 4);
-	fnLDA_SetRampEnd(id, ud.max_att * 4);
-	fnLDA_SetAttenuationStep(id, ud.ramp_steps);
-	fnLDA_SetDwellTime(id, ud.atime * 1000);
+	int i, cur_att;
+
+	if (ud.cont && (ud.start_att < ud.end_att)){
+		for(;;){
+			fnLDA_SetAttenuation(id, ud.start_att);
+			for(i = 0; i <= (ud.end_att - ud.start_att); i++){
+				sleep(MIKRO_SEC(ud.step_time));
+				cur_att = fnLDA_GetAttenuation(1);
+				printf("cur_att %d\n", cur_att);
+				fnLDA_SetAttenuation(id,
+					cur_att + ud.ramp_steps);
+			}
+		}
+	}
+	else if (ud.cont && (ud.start_att > ud.end_att)){
+		for(;;){
+			fnLDA_SetAttenuation(id, ud.start_att);
+			for(i = 0; i <= (ud.start_att - ud.end_att); i++){
+				sleep(MIKRO_SEC(ud.step_time));
+				cur_att = fnLDA_GetAttenuation(1);
+				printf("cur_att %d\n", cur_att);
+				fnLDA_SetAttenuation(id,
+					cur_att - ud.ramp_steps);
+			}
+		}
+	}
+	else if (ud.start_att < ud.end_att){
+			fnLDA_SetAttenuation(id, ud.start_att);
+			for(i = 0; i <= (ud.end_att - ud.start_att); i++){
+				sleep(MIKRO_SEC(ud.step_time));
+				cur_att = fnLDA_GetAttenuation(1);
+				printf("cur_att %d\n", cur_att);
+				fnLDA_SetAttenuation(id,
+					cur_att + ud.ramp_steps);
+		}
+	}
+	else if (ud.start_att > ud.end_att){
+			fnLDA_SetAttenuation(id, ud.start_att);
+			for(i = 0; i <= (ud.start_att - ud.end_att); i++){
+				sleep(MIKRO_SEC(ud.step_time));
+				cur_att = fnLDA_GetAttenuation(1);
+				printf("cur_att %d\n", cur_att);
+				fnLDA_SetAttenuation(id,
+					cur_att - ud.ramp_steps);
+			}
+	}
+}
+int
+set_one_attenuation(unsigned int id)
+{
+	if (ud.attenuation > fnLDA_GetMaxAttenuation(id)){
+		printf("%d is above maximal attenuation\n", ud.attenuation);
+		return 0;
+	}
+}
+
+int
+set_triangle(unsigned int id)
+{
+	int i, cur_att;
+
+	if (ud.cont && (ud.start_att < ud.end_att)) {
+		for(;;) {
+			fnLDA_SetAttenuation(id, ud.start_att);
+			for (i = 0; i <= (ud.end_att - ud.start_att); i++) {
+				sleep(MIKRO_SEC(ud.step_time));
+				cur_att = fnLDA_GetAttenuation(1);
+				printf("cur_att %d\n", cur_att);
+				fnLDA_SetAttenuation(id,
+					cur_att + ud.ramp_steps);
+			}
+			for (i = 0; i < (ud.start_att - ud.end_att); i++) {
+				sleep(MIKRO_SEC(ud.step_time));
+				cur_att = fnLDA_GetAttenuation(1);
+				printf("cur_att %d\n", cur_att);
+				fnLDA_SetAttenuation(id,
+					cur_att - ud.ramp_steps);
+			}
+		}
+	}	
+	if (ud.cont && (ud.start_att > ud.end_att)) {
+		for(;;){
+			fnLDA_SetAttenuation(id, ud.start_att);
+			for (i = 0; i < (ud.start_att - ud.end_att); i++) {
+				sleep(MIKRO_SEC(ud.step_time));
+				cur_att = fnLDA_GetAttenuation(1);
+				printf("cur_att %d\n", cur_att);
+				fnLDA_SetAttenuation(id,
+					cur_att - ud.ramp_steps);
+			}
+			for (i = 1; i <= (ud.start_att - ud.end_att); i++) {
+				sleep(MIKRO_SEC(ud.step_time));
+				cur_att = fnLDA_GetAttenuation(1);
+				printf("cur_att %d\n", cur_att);
+				fnLDA_SetAttenuation(id,
+					cur_att + ud.ramp_steps);
+			}
+			fnLDA_SetAttenuation(id, ud.start_att);
+		}
+	}	
+}
+
+void
+clear_userdata(void)
+{
+	ud.atime = 60;
+	ud.attenuation = 0;
+	ud.start_att = 0;
+	ud.end_att = 0;
+	ud.ramp = 0;
+	ud.sine = 0;
+	ud.triangle = 0;
+	ud.ramp_steps = 1;
+	ud.cont = 0;
+	ud.step_time = 100000;
 }
 
 int 
@@ -180,7 +321,7 @@ main(int argc, char const *argv[])
 	char *input = "";
 	/* get the uid of caller */
 	uid_t uid = geteuid();
-
+	clear_userdata();
 	if (uid != 0) {
 		printf("brick needs to be run as root to access USB ports\n");
 		printf("please execute again as root\n");
@@ -234,16 +375,23 @@ main(int argc, char const *argv[])
 	/*
 	 * Set device as specified by user
 	 */
-	for (id = 0; id < nr_active_devices; id++){
-		if (ud.sine)
+	fnLDA_SetAttenuation(1, 0);
+	for (id = 1; id <= nr_active_devices; id++){
+		printf("in for loop\n");
+		printf("id is %d\n", id);
+		printf("ud.ramp is set to%d\n", ud.ramp);
+		if (ud.sine == 1)
+			printf("sine bla\n");
 			/* TODO call sine_function which will set ramp form
 		 	 * in intervall mybe with steps and set one step a
 		 	 * second so it will be decided by step size and
 		 	 * timehow many curve intervalls there will be */
-		if (ud.triangle)
-			/* TODO: call function which will start with min_att
-			 * and goes up to max_att in half the time set */
-		if (ud.ramp){
+		else if (ud.triangle == 1){
+			printf("triangle bla\n");
+			set_triangle(id);
+		}
+		else if (ud.ramp == 1){
+			printf("sending to set_ramp now\n");
 			set_ramp(id);
 			/* goes straight to max power. needs formular to make
 			 * good steps if not set and step per time intervall
@@ -254,7 +402,7 @@ main(int argc, char const *argv[])
 	/*
 	 * close any open device
 	 */
-	for (id = 0; id <= nr_active_devices; id++){
+	for (id = 0; id < nr_active_devices; id++){
 		status = fnLDA_CloseDevice(working_devices[id]);
 		if (status != 0){
 			printf("shut down of device %d unsucsessfull\n",
@@ -263,6 +411,5 @@ main(int argc, char const *argv[])
 		}
 		printf("shut down of device %d was successfull\n", id);
 	}
-
 	return 1;
 }
