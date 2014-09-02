@@ -15,6 +15,7 @@ struct user_data
 	unsigned int ramp_steps;
 	unsigned int cont;
 	unsigned int step_time;
+	unsigned int simple;
 };
 
 int get_serial_and_name(int device_count, unsigned int serial,

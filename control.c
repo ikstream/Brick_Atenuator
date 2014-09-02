@@ -147,6 +147,7 @@ get_parameters(int argc, char const *argv[])
 		}
 		if (strncmp(argv[i], "-a", sizeof(argv[i])) == 0) {
 			ud.attenuation = atoi(argv[i + 1]);
+			ud.simple = 1;
 			printf("attenuation set to %d dB\n", ud.attenuation);
 		}
 		if (strncmp(argv[i], "-f", sizeof(argv[i])) == 0) {
@@ -176,11 +177,6 @@ get_parameters(int argc, char const *argv[])
 				printf("continous behavior is set\n");
 				ud.cont = 1;
 			}
-		}
-		else {
-			printf("%s is no valid option\n", argv[i]);
-			printf("use -h option for available options\n");
-			return 0;
 		}
 	}
 	return 1;
@@ -236,13 +232,18 @@ set_ramp(int id)
 			}
 	}
 }
+
 int
-set_one_attenuation(unsigned int id)
+set_attenuation(unsigned int id)
 {
 	if (ud.attenuation > fnLDA_GetMaxAttenuation(id)){
 		printf("%d is above maximal attenuation\n", ud.attenuation);
 		return 0;
 	}
+	printf("set device to %ddB attenuation\n", ud.attenuation);
+	fnLDA_SetAttenuation(id, ud.attenuation);
+	sleep(MIKRO_SEC(ud.atime));
+	return 1;
 }
 
 int
@@ -253,7 +254,7 @@ set_triangle(unsigned int id)
 	if (ud.cont && (ud.start_att < ud.end_att)) {
 		for(;;) {
 			fnLDA_SetAttenuation(id, ud.start_att);
-			for (i = 0; i <= (ud.end_att - ud.start_att); i++) {
+			for (i = 1; i <= (ud.end_att - ud.start_att); i++) {
 				sleep(MIKRO_SEC(ud.step_time));
 				cur_att = fnLDA_GetAttenuation(1);
 				printf("cur_att %d\n", cur_att);
@@ -304,6 +305,7 @@ clear_userdata(void)
 	ud.ramp_steps = 1;
 	ud.cont = 0;
 	ud.step_time = 100000;
+	ud.simple = 0;
 }
 
 int 
@@ -377,8 +379,6 @@ main(int argc, char const *argv[])
 	 */
 	fnLDA_SetAttenuation(1, 0);
 	for (id = 1; id <= nr_active_devices; id++){
-		printf("in for loop\n");
-		printf("id is %d\n", id);
 		printf("ud.ramp is set to%d\n", ud.ramp);
 		if (ud.sine == 1)
 			printf("sine bla\n");
@@ -386,17 +386,14 @@ main(int argc, char const *argv[])
 		 	 * in intervall mybe with steps and set one step a
 		 	 * second so it will be decided by step size and
 		 	 * timehow many curve intervalls there will be */
-		else if (ud.triangle == 1){
-			printf("triangle bla\n");
+		else if (ud.triangle == 1)
 			set_triangle(id);
-		}
-		else if (ud.ramp == 1){
-			printf("sending to set_ramp now\n");
+		else if (ud.ramp == 1)
 			set_ramp(id);
-			/* goes straight to max power. needs formular to make
-			 * good steps if not set and step per time intervall
-			 * needs to be set */
-		}
+		else if (ud.simple == 1)
+			set_attenuation(id);
+
+		fnLDA_SetAttenuation(id, 0);
 	}
 
 	/*
