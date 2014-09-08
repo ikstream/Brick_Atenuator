@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #ifndef _CONTROL_H_
 #define _CONTROL_H_
 
@@ -16,6 +18,8 @@ struct user_data
 	unsigned int cont;
 	unsigned int step_time;
 	unsigned int simple;
+	unsigned int file;
+	char *path;
 };
 
 int get_serial_and_name(int device_count, unsigned int serial,

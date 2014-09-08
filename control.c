@@ -2,12 +2,16 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stdlib.h>
 #include "control.h"
 #include "LDAhid.h"
 
+#define _GNU_SOURCE
 #define FALSE 0
 #define TRUE !FALSE
 #define MIKRO_SEC(step_time) ((1 * step_time) / 100000)
+#define STRING_LENGTH 12
+//#define LINE_BREAK '\n'
 
 struct user_data ud;
 
@@ -34,47 +38,47 @@ get_device_data(unsigned int *working_devices, int nr_active_devices)
 		status = fnLDA_GetAttenuation(working_devices[id]);
 			if (status == INVALID_DEVID
 			    || status == DEVICE_NOT_READY)
-					return strncpy(errmsg ,fnLDA_perror(status), sizeof(errmsg));
+					return strncpy(errmsg ,fnLDA_perror(status), strlen(errmsg));
 
 		status = fnLDA_GetMinAttenuation(working_devices[id]);
 			if (status == INVALID_DEVID
 			    || status == DEVICE_NOT_READY)
-					return strncpy(errmsg ,fnLDA_perror(status), sizeof(errmsg));
+					return strncpy(errmsg ,fnLDA_perror(status), strlen(errmsg));
 		
 		status = fnLDA_GetMaxAttenuation(working_devices[id]);
 			if (status == INVALID_DEVID
 			    || status == DEVICE_NOT_READY)
-					return strncpy(errmsg ,fnLDA_perror(status), sizeof(errmsg));
+					return strncpy(errmsg ,fnLDA_perror(status), strlen(errmsg));
 		
 		status = fnLDA_GetIdleTime(working_devices[id]);
 			if (status == INVALID_DEVID
 			    || status == DEVICE_NOT_READY)
-					return strncpy(errmsg ,fnLDA_perror(status), sizeof(errmsg));
+					return strncpy(errmsg ,fnLDA_perror(status), strlen(errmsg));
 		
 		status = fnLDA_GetDwellTime(working_devices[id]);
 			if (status == INVALID_DEVID
 			    || status == DEVICE_NOT_READY)
-					return strncpy(errmsg ,fnLDA_perror(status), sizeof(errmsg));
+					return strncpy(errmsg ,fnLDA_perror(status), strlen(errmsg));
 		
 		status = fnLDA_GetAttenuationStep(working_devices[id]);
 			if (status == INVALID_DEVID
 			    || status == DEVICE_NOT_READY)
-					return strncpy(errmsg ,fnLDA_perror(status), sizeof(errmsg));
+					return strncpy(errmsg ,fnLDA_perror(status), strlen(errmsg));
 		
 		status = fnLDA_GetRF_On(working_devices[id]);
 			if (status == INVALID_DEVID
 			    || status == DEVICE_NOT_READY)
-					return strncpy(errmsg ,fnLDA_perror(status), sizeof(errmsg));
+					return strncpy(errmsg ,fnLDA_perror(status), strlen(errmsg));
 		
 		status = fnLDA_GetRampStart(working_devices[id]);
 			if (status == INVALID_DEVID
 			    || status == DEVICE_NOT_READY)
-				return strncpy(errmsg ,fnLDA_perror(status), sizeof(errmsg));
+				return strncpy(errmsg ,fnLDA_perror(status), strlen(errmsg));
 
 		status = fnLDA_GetRampEnd(working_devices[id]);
 			if (status == INVALID_DEVID
 			    || status == DEVICE_NOT_READY)
-					return strncpy(errmsg ,fnLDA_perror(status), sizeof(errmsg));
+					return strncpy(errmsg ,fnLDA_perror(status), strlen(errmsg));
 	}
 	return success;
 	
@@ -119,65 +123,108 @@ call_help(void)
 	return;
 }
 
-int 
-get_parameters(int argc, char const *argv[])
+char* 
+get_entry(char* line, int entry)
 {
+	char* token;
+	for (token = strtok(line, ";"); token && *token;
+	     token = strtok(NULL, ";\n")) {
+			if (!--entry)
+				return token;
+	}
+	return NULL;
+}
+
+int
+read_file(char *path)
+{
+	printf("in read_file now\n");
+
+	int i = 0;
+	FILE *fp;
+	char* tmp;
+	char line[512];
+
+	fp = fopen(path, "r");
+
+	while (fgets(line, 512, fp)) {
+		tmp = strdup(line);
+		ud.atime = atoi(get_entry(tmp, 1));
+		printf("ud.atime: %d\n", ud.atime);
+		tmp = strdup(line);
+		ud.attenuation = atoi(get_entry(tmp,2));
+		printf("ud.attenuation: %d\n", ud.attenuation);
+		set_attenuation(1);
+		free(tmp);
+	}
+	fclose(fp);
+	return 1;
+}
+
+int 
+get_parameters(int argc, char *argv[])
+{
+	printf("in get_parameters now\n");
 	int i;
-	for (i = 1; i < argc; i++) {
-		if (strncmp(argv[i], "-t", sizeof(argv[i])) == 0) {
+
+	for (i = 1; i < argc - 1; i++) {
+		if (strncmp(argv[i], "-t", strlen(argv[i])) == 0) {
 			ud.atime = atoi(argv[i + 1]);
 			printf("time for attenuation set to %d seconds.\n",
 				ud.atime);
 		}
-		if (strncmp(argv[i], "-step", sizeof(argv[i])) == 0) {
+		if (strncmp(argv[i], "-step", strlen(argv[i])) == 0) {
 			ud.ramp_steps = atoi(argv[i + 1]);
 			printf("ramp steps set to %d dB\n", ud.ramp_steps);
 		}
-		if (strncmp(argv[i], "-step_time", sizeof(argv[i])) == 0) {
+		if (strncmp(argv[i], "-step_time", strlen(argv[i])) == 0) {
 			ud.step_time = atoi(argv[i + 1]);
 			printf("time per step set to %d mikroseconds\n", ud.step_time);
 		}
-		if (strncmp(argv[i], "-start", sizeof(argv[i])) == 0) {
+		if (strncmp(argv[i], "-start", strlen(argv[i])) == 0) {
 			ud.start_att = atoi(argv[i + 1]);
 			printf("start attenuation set to %d dB\n", ud.start_att);
 		}
-		if (strncmp(argv[i], "-end", sizeof(argv[i])) == 0) {
+		if (strncmp(argv[i], "-end", strlen(argv[i])) == 0) {
 			ud.end_att = atoi(argv[i + 1]);
 			printf("end attenuation set to %d dB\n", ud.end_att);
 		}
-		if (strncmp(argv[i], "-a", sizeof(argv[i])) == 0) {
+		if (strncmp(argv[i],"-f", strlen(argv[i])) == 0) {
+			ud.path = argv[i + 1];
+			if (strncmp(argv[i + 2], "-r", strlen(argv[i + 2])) == 0)
+					ud.cont = 1;
+			ud.file = 1;
+		}
+		if (strncmp(argv[i], "-a", strlen(argv[i])) == 0) {
 			ud.attenuation = atoi(argv[i + 1]);
 			ud.simple = 1;
 			printf("attenuation set to %d dB\n", ud.attenuation);
 		}
-		if (strncmp(argv[i], "-f", sizeof(argv[i])) == 0) {
-			if (strncmp(argv[i + 1], "ramp",
-				sizeof(argv[i + 1])) == 0) {
-					printf("attenuation set to ramp\n");
-					ud.ramp = 1;
+		if(strncmp(argv[i], "-p", strlen(argv[i])) == 0) {	
+			if (strncmp(argv[i + 1], "-ramp",
+			   strlen(argv[i + 1])) == 0) {
+				printf("attenuation set to ramp\n");
+				ud.ramp = 1;
 			}
-			else if (strncmp(argv[i + 1], "sine",
-				sizeof(argv[i + 1])) == 0) {
+			else if (strncmp(argv[i + 1], "-sine",
+				strlen(argv[i + 1])) == 0) {
 					printf("attenuation set to sine\n");
 					ud.sine = 1;	
 			}
-			else if (strncmp(argv[i + 1],"triangle",
-				sizeof(argv[i + 1])) == 0) {
+			else if (strncmp(argv[i + 1],"-triangle",
+				strlen(argv[i + 1])) == 0) {
 					printf("attenuation set to triangle\n");
 					ud.triangle = 1;
 			}
-			else {
-				printf("invalid Argument after -f\n");
-				printf("ues ramp, sine or triangle\n");
-			}
 		}
 		if (ud.ramp || ud.triangle){
-			if (strncmp(argv[i], "cont", sizeof(argv[i]))
+			if (strncmp(argv[i], "cont", strlen(argv[i]))
 			    == 0) {
 				printf("continous behavior is set\n");
 				ud.cont = 1;
 			}
 		}
+
 	}
 	return 1;
 }
@@ -236,12 +283,16 @@ set_ramp(int id)
 int
 set_attenuation(unsigned int id)
 {
+	/*
 	if (ud.attenuation > fnLDA_GetMaxAttenuation(id)){
 		printf("%d is above maximal attenuation\n", ud.attenuation);
 		return 0;
 	}
+	*/
+	printf("max_attenuation: %d\n", fnLDA_GetMaxAttenuation(1));
 	printf("set device to %ddB attenuation\n", ud.attenuation);
-	fnLDA_SetAttenuation(id, ud.attenuation);
+	fnLDA_SetAttenuation(id, (ud.attenuation * 4));
+	printf("attenuation:%d\n", fnLDA_GetAttenuation(1));
 	sleep(MIKRO_SEC(ud.atime));
 	return 1;
 }
@@ -249,6 +300,7 @@ set_attenuation(unsigned int id)
 int
 set_triangle(unsigned int id)
 {
+	printf("in triangle\n");
 	int i, cur_att;
 
 	if (ud.cont && (ud.start_att < ud.end_att)) {
@@ -261,13 +313,14 @@ set_triangle(unsigned int id)
 				fnLDA_SetAttenuation(id,
 					cur_att + ud.ramp_steps);
 			}
-			for (i = 0; i < (ud.start_att - ud.end_att); i++) {
+			for (i = ud.end_att; i > (ud.end_att - ud.start_att); i--) {
 				sleep(MIKRO_SEC(ud.step_time));
 				cur_att = fnLDA_GetAttenuation(1);
 				printf("cur_att %d\n", cur_att);
 				fnLDA_SetAttenuation(id,
 					cur_att - ud.ramp_steps);
 			}
+			fnLDA_SetAttenuation(id, ud.start_att);
 		}
 	}	
 	if (ud.cont && (ud.start_att > ud.end_att)) {
@@ -306,10 +359,11 @@ clear_userdata(void)
 	ud.cont = 0;
 	ud.step_time = 100000;
 	ud.simple = 0;
+	ud.file = 0;
 }
 
 int 
-main(int argc, char const *argv[])
+main(int argc, char *argv[])
 {
 	int device_count = 0;
 	int id, nr_active_devices, status, i;
@@ -334,15 +388,12 @@ main(int argc, char const *argv[])
 		printf("for a list of options type brick -h\n");
 		return -1;
 	}
-	if ((strncmp(argv[1], "-h", sizeof(argv[1]))) == 0) {
+	if ((strncmp(argv[1], "-h", strlen(argv[1]))) == 0) {
 		call_help();	
 		return 0;
 	}
-
-	if (!get_parameters(argc, argv))
-		return 0;
-
 	fnLDA_Init();
+
 	char *version = fnLDA_LibVersion();
 
 	fnLDA_SetTestMode(FALSE);
@@ -365,21 +416,22 @@ main(int argc, char const *argv[])
 		status = fnLDA_InitDevice(working_devices[id]);
 		if (status != 0){
 			printf("initialisation of device %d unsucsessfull\n",
-				id);
+				id + 1);
 			continue;
 		}
-		printf("initialized device %d successfully\n", id);
+		printf("initialized device %d successfully\n", id + 1);
 	}
 
 	messages = get_device_data(working_devices, nr_active_devices);
 	printf("%s\n", messages);
-
-	/*
+	printf("Device Stepsize: %d\n", fnLDA_GetDevResolution(1));
+	if (!get_parameters(argc, argv))
+		return 0;
+	/*lvboynxaie
 	 * Set device as specified by user
 	 */
 	fnLDA_SetAttenuation(1, 0);
 	for (id = 1; id <= nr_active_devices; id++){
-		printf("ud.ramp is set to%d\n", ud.ramp);
 		if (ud.sine == 1)
 			printf("sine bla\n");
 			/* TODO call sine_function which will set ramp form
@@ -392,6 +444,13 @@ main(int argc, char const *argv[])
 			set_ramp(id);
 		else if (ud.simple == 1)
 			set_attenuation(id);
+		else if (ud.file && ud.cont) {
+			printf("in cont case\n");
+			for(;;)
+				read_file(ud.path);
+		}
+		else if (ud.file == 1)
+			read_file(ud.path);
 
 		fnLDA_SetAttenuation(id, 0);
 	}
@@ -403,10 +462,10 @@ main(int argc, char const *argv[])
 		status = fnLDA_CloseDevice(working_devices[id]);
 		if (status != 0){
 			printf("shut down of device %d unsucsessfull\n",
-				id);
+				id + 1);
 			continue;
 		}
-		printf("shut down of device %d was successfull\n", id);
+		printf("shut down of device %d was successfull\n", id + 1);
 	}
 	return 1;
 }
