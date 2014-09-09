@@ -11,10 +11,14 @@
 #define TRUE !FALSE
 #define MIKRO_SEC(step_time) ((1 * step_time) / 100000)
 #define STRING_LENGTH 12
-//#define LINE_BREAK '\n'
 
 struct user_data ud;
 
+//TODO: write man page
+
+//TODO: currently only useable with one device at some points
+//even if it is possible to use several devices they will be handled 
+//one after the other
 int 
 get_serial_and_name(int device_count, unsigned int serial, char *device_name)
 {
@@ -88,17 +92,14 @@ void
 call_help(void)
 {
 	//print available options
+	//TODO: check if every option is covered in here
 	printf("-set attenuation with\n");
 	printf("\t-a <attenuation in dB>\n");
 	printf("\r\n");
 
-	printf("-set time per step with\n");
-	printf("\t-step_time\n");
+	printf("-set time for attenuation duration with\n");
+	printf("\t-t <time in sec>\n");
 	printf("\r\n");
-
-	// printf("-set time for attenuation duration with\n");
-	// printf("\t-t <time in sec>\n");
-	// printf("\r\n");
 
 	printf("-set starting attenuation stregth in dB with\n");
 	printf("\t-start <dB>\n");
@@ -108,12 +109,20 @@ call_help(void)
 	printf("\t-end <dB>\n");
 	printf("\r\n");
 
-	printf("-set attenuation form with\n");
-	printf("\t-f <ramp|sine|triangle>\n");
+	printf("-set time per step with\n");
+	printf("\t-step_time\n");
 	printf("\r\n");
 
-  	printf("repeat operation until canceled by user\n");
-  	printf("\tcont\n");
+	printf("-set attenuation form with\n");
+	printf("\t-p <ramp|sine|triangle>\n");
+	printf("\r\n");
+
+	printf("-to use a .csv file use\n");
+	printf("\t-f path/to/file\n");
+	printf("\r\n");
+
+  	printf("repeat form, or file input until canceled by user\n");
+  	printf("\t-r\n");
   	printf("\r\n");
 
 	printf("-to show this overview use\n");
@@ -138,13 +147,16 @@ get_entry(char* line, int entry)
 int
 read_file(char *path)
 {
-	printf("in read_file now\n");
-
 	int i = 0;
 	FILE *fp;
 	char* tmp;
 	char line[512];
 
+	//TODO: check if there are more the two entries in
+	//given file and if so, complain
+
+	//TODO: check for invalid file pointer check
+	//probably check in main
 	fp = fopen(path, "r");
 
 	while (fgets(line, 512, fp)) {
@@ -167,6 +179,9 @@ get_parameters(int argc, char *argv[])
 	printf("in get_parameters now\n");
 	int i;
 
+	//TODO: check for invalid input
+
+	//TODO: check for order of arguments
 	for (i = 1; i < argc - 1; i++) {
 		if (strncmp(argv[i], "-t", strlen(argv[i])) == 0) {
 			ud.atime = atoi(argv[i + 1]);
@@ -218,7 +233,7 @@ get_parameters(int argc, char *argv[])
 			}
 		}
 		if (ud.ramp || ud.triangle){
-			if (strncmp(argv[i], "cont", strlen(argv[i]))
+			if (strncmp(argv[i], "-r", strlen(argv[i]))
 			    == 0) {
 				printf("continous behavior is set\n");
 				ud.cont = 1;
@@ -234,6 +249,7 @@ set_ramp(int id)
 {
 	int i, cur_att;
 
+	//TODO: check if all ramp options are covered
 	if (ud.cont && (ud.start_att < ud.end_att)){
 		for(;;){
 			fnLDA_SetAttenuation(id, ud.start_att);
@@ -283,16 +299,16 @@ set_ramp(int id)
 int
 set_attenuation(unsigned int id)
 {
-	/*
+	//TODO: check if ud.attenuation is below min_attenuation
+	//and set it to 0 or complain -> complain and set to 0
 	if (ud.attenuation > fnLDA_GetMaxAttenuation(id)){
-		printf("%d is above maximal attenuation\n", ud.attenuation);
+		printf("%d is above maximal attenuation of %d\n",
+			ud.attenuation, fnLDA_GetMaxAttenuation(id));
 		return 0;
 	}
-	*/
-	printf("max_attenuation: %d\n", fnLDA_GetMaxAttenuation(1));
-	printf("set device to %ddB attenuation\n", ud.attenuation);
+
 	fnLDA_SetAttenuation(id, (ud.attenuation * 4));
-	printf("attenuation:%d\n", fnLDA_GetAttenuation(1));
+	printf("set device to %ddB attenuation\n", fnLDA_GetAttenuation(1));
 	sleep(MIKRO_SEC(ud.atime));
 	return 1;
 }
@@ -300,6 +316,9 @@ set_attenuation(unsigned int id)
 int
 set_triangle(unsigned int id)
 {
+	//TODO: check if triangle is working correctly
+
+	//TODO: add non cont case
 	printf("in triangle\n");
 	int i, cur_att;
 
@@ -345,6 +364,8 @@ set_triangle(unsigned int id)
 	}	
 }
 
+//TODO: implement set_sine function
+
 void
 clear_userdata(void)
 {
@@ -371,10 +392,10 @@ main(int argc, char *argv[])
 	DEVID working_devices[MAXDEVICES];
 	char device_name[MAX_MODELNAME];
 	char *messages, *tmp;
-	/*
-	 * TODO: make input overflow safe
-	 */
+	
+	//TODO: make input overflow safe
 	char *input = "";
+	
 	/* get the uid of caller */
 	uid_t uid = geteuid();
 	clear_userdata();
@@ -392,15 +413,15 @@ main(int argc, char *argv[])
 		call_help();	
 		return 0;
 	}
+	//probably check for invalid file to reduce waiting time for user
 	fnLDA_Init();
 
 	char *version = fnLDA_LibVersion();
 
 	fnLDA_SetTestMode(FALSE);
-	/* 
-	 * TODO: check in intervalls if connected devices have been 
-	 * exchanged or disconnected 
-	 */
+	
+	//TODO: check in intervalls if connected devices have been 
+	//exchanged or disconnected 
 	device_count = fnLDA_GetNumDevices();
 
 	printf("you are using libversion %s\n", version);
@@ -424,10 +445,11 @@ main(int argc, char *argv[])
 
 	messages = get_device_data(working_devices, nr_active_devices);
 	printf("%s\n", messages);
-	printf("Device Stepsize: %d\n", fnLDA_GetDevResolution(1));
+	printf("You can set attenuation steps in %ddB steps\n",
+		(fnLDA_GetDevResolution(1) / 4));
 	if (!get_parameters(argc, argv))
 		return 0;
-	/*lvboynxaie
+	/*
 	 * Set device as specified by user
 	 */
 	fnLDA_SetAttenuation(1, 0);
@@ -435,7 +457,7 @@ main(int argc, char *argv[])
 		if (ud.sine == 1)
 			printf("sine bla\n");
 			/* TODO call sine_function which will set ramp form
-		 	 * in intervall mybe with steps and set one step a
+		 	 * in intervall maybe with steps and set one step a
 		 	 * second so it will be decided by step size and
 		 	 * timehow many curve intervalls there will be */
 		else if (ud.triangle == 1)
