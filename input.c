@@ -141,7 +141,7 @@ get_parameters(int argc, char *argv[])
 				ud.triangle = 1;
 		}
 
-		if (ud.ramp || ud.triangle){
+		if (ud.ramp || ud.triangle) {
 			if (strncmp(argv[i], "-r", strlen(argv[i]))
 			    == 0)
 				ud.cont = 1;

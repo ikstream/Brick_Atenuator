@@ -42,7 +42,7 @@ get_device_data(unsigned int *working_devices, int nr_active_devices)
 	char *success = "All data has been set correctly";
 	int status, id;
 
-	for(id = 0; id < nr_active_devices; id++){
+	for(id = 0; id < nr_active_devices; id++) {
 		status = fnLDA_GetAttenuation(working_devices[id]);
 			if (status == INVALID_DEVID
 			    || status == DEVICE_NOT_READY)
@@ -105,12 +105,20 @@ void
 call_help(void)
 {
 	//TODO: bring options in sensible order
+	printf("-to show this overview use\n");
+	printf("\t-h\n");
+	printf("\r\n");
+
 	printf("-set attenuation with\n");
 	printf("\t-a <attenuation in dB>\n");
 	printf("\r\n");
 
 	printf("-set time for attenuation duration with\n");
 	printf("\t-t <time in sec>\n");
+	printf("\r\n");
+
+	printf("-set attenuation form with\n");
+	printf("\t-p <ramp|sine|triangle>\n");
 	printf("\r\n");
 
 	printf("-set starting attenuation stregth in dB with\n");
@@ -125,10 +133,6 @@ call_help(void)
 	printf("\t-step_time\n");
 	printf("\r\n");
 
-	printf("-set attenuation form with\n");
-	printf("\t-p <ramp|sine|triangle>\n");
-	printf("\r\n");
-
 	printf("-to use a .csv file use\n");
 	printf("\t-f path/to/file\n");
 	printf("\r\n");
@@ -136,10 +140,6 @@ call_help(void)
   	printf("repeat form, or file input until canceled by user\n");
   	printf("\t-r\n");
   	printf("\r\n");
-
-	printf("-to show this overview use\n");
-	printf("\t-h\n");
-	printf("\r\n");
 
 	return;
 }
@@ -149,11 +149,37 @@ set_ramp(int id)
 {
 	int i, cur_att;
 
+	if (ud.start_att < fnLDA_GetMinAttenuation(id)) {
+		printf("%d is below minumal attenuation of %d\n",
+			ud.start_att, fnLDA_GetMinAttenuation(id));
+		printf("start attenuation has been set to 0dB\n");
+		ud.start_att = fnLDA_GetMinAttenuation(id);
+	}
+	if (ud.end_att < fnLDA_GetMinAttenuation(id)) {
+		printf("%d is below minumal attenuation of %d\n",
+			ud.end_att, fnLDA_GetMinAttenuation(id));
+		printf("final attenuation has been set to 0dB\n");
+		ud.end_att = fnLDA_GetMinAttenuation(id);
+	}
+	if (ud.start_att > fnLDA_GetMaxAttenuation(id)) {
+		printf("%d is above maximal attenuation of %d\n",
+			ud.start_att, fnLDA_GetMaxAttenuation(id));
+		printf("start attenuation has been set to %d\n",
+			fnLDA_GetMaxAttenuation(id));
+		ud.start_att = fnLDA_GetMaxAttenuation(id);
+	}
+	if (ud.end_att > fnLDA_GetMaxAttenuation(id)) {
+		printf("%d is above maximal attenuation of %d\n",
+			ud.end_att, fnLDA_GetMaxAttenuation(id));
+		printf("final attenuation has been set to %d\n");
+		ud.end_att = fnLDA_GetMaxAttenuation(id);
+	}
+
 	//TODO: check if all ramp options are covered
-	if (ud.cont && (ud.start_att < ud.end_att)){
-		for(;;){
+	if (ud.cont && (ud.start_att < ud.end_att)) {
+		for(;;) {
 			fnLDA_SetAttenuation(id, ud.start_att);
-			for(i = 0; i <= (ud.end_att - ud.start_att); i++){
+			for(i = 0; i <= (ud.end_att - ud.start_att); i++) {
 				sleep(MIKRO_SEC(ud.step_time));
 				cur_att = fnLDA_GetAttenuation(1);
 				printf("cur_att %d\n", cur_att);
@@ -162,10 +188,10 @@ set_ramp(int id)
 			}
 		}
 	}
-	else if (ud.cont && (ud.start_att > ud.end_att)){
-		for(;;){
+	else if (ud.cont && (ud.start_att > ud.end_att)) {
+		for(;;) {
 			fnLDA_SetAttenuation(id, ud.start_att);
-			for(i = 0; i <= (ud.start_att - ud.end_att); i++){
+			for(i = 0; i <= (ud.start_att - ud.end_att); i++) {
 				sleep(MIKRO_SEC(ud.step_time));
 				cur_att = fnLDA_GetAttenuation(1);
 				printf("cur_att %d\n", cur_att);
@@ -174,9 +200,9 @@ set_ramp(int id)
 			}
 		}
 	}
-	else if (ud.start_att < ud.end_att){
+	else if (ud.start_att < ud.end_att) {
 		fnLDA_SetAttenuation(id, ud.start_att);
-		for(i = 0; i <= (ud.end_att - ud.start_att); i++){
+		for(i = 0; i <= (ud.end_att - ud.start_att); i++) {
 			sleep(MIKRO_SEC(ud.step_time));
 			cur_att = fnLDA_GetAttenuation(1);
 			printf("cur_att %d\n", cur_att);
@@ -184,9 +210,9 @@ set_ramp(int id)
 				cur_att + ud.ramp_steps);
 		}
 	}
-	else if (ud.start_att > ud.end_att){
+	else if (ud.start_att > ud.end_att) {
 		fnLDA_SetAttenuation(id, ud.start_att);
-		for(i = 0; i <= (ud.start_att - ud.end_att); i++){
+		for(i = 0; i <= (ud.start_att - ud.end_att); i++) {
 			sleep(MIKRO_SEC(ud.step_time));
 			cur_att = fnLDA_GetAttenuation(1);
 			printf("cur_att %d\n", cur_att);
@@ -207,7 +233,7 @@ set_ramp(int id)
 int
 set_attenuation(unsigned int id)
 {
-	if (ud.attenuation < fnLDA_GetMinAttenuation(id)){
+	if (ud.attenuation < fnLDA_GetMinAttenuation(id)) {
 		printf("%d is below minumal attenuation of %d\n",
 			ud.attenuation, fnLDA_GetMinAttenuation(id));
 		printf("attenuation has been set to 0dB\n");
@@ -215,7 +241,7 @@ set_attenuation(unsigned int id)
 		sleep(MIKRO_SEC(ud.atime));
 		return 1;
 	}
-	if (ud.attenuation > fnLDA_GetMaxAttenuation(id)){
+	if (ud.attenuation > fnLDA_GetMaxAttenuation(id)) {
 		printf("%d is above maximal attenuation of %d\n",
 			ud.attenuation, fnLDA_GetMaxAttenuation(id));
 		printf("attenuation has been set to %d\n",
@@ -261,7 +287,7 @@ set_triangle(unsigned int id)
 		}
 	}	
 	if (ud.cont && (ud.start_att > ud.end_att)) {
-		for(;;){
+		for(;;) {
 			for (i = 0; i < (ud.start_att - ud.end_att); i++) {
 				sleep(MIKRO_SEC(ud.step_time));
 				cur_att = fnLDA_GetAttenuation(1);
@@ -345,9 +371,9 @@ main(int argc, char *argv[])
 	/*
 	 * initiate devices
 	 */
-	for (id = 0; id < nr_active_devices; id++){
+	for (id = 0; id < nr_active_devices; id++) {
 		status = fnLDA_InitDevice(working_devices[id]);
-		if (status != 0){
+		if (status != 0) {
 			printf("initialisation of device %d unsucsessfull\n",
 				id + 1);
 			continue;
@@ -364,8 +390,8 @@ main(int argc, char *argv[])
 	 * Set device as specified by user
 	 */
 	fnLDA_SetAttenuation(1, 0);
-	for (id = 1; id <= nr_active_devices; id++){
-		if (ud.sine == 1){
+	for (id = 1; id <= nr_active_devices; id++) {
+		if (ud.sine == 1) {
 			/* TODO call sine_function which will set ramp form
 		 	 * in intervall maybe with steps and set one step a
 		 	 * second so it will be decided by step size and
@@ -390,9 +416,9 @@ main(int argc, char *argv[])
 	/*
 	 * close any open device
 	 */
-	for (id = 0; id < nr_active_devices; id++){
+	for (id = 0; id < nr_active_devices; id++) {
 		status = fnLDA_CloseDevice(working_devices[id]);
-		if (status != 0){
+		if (status != 0) {
 			printf("shut down of device %d unsucsessfull\n",
 				id + 1);
 			continue;
