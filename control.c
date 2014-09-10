@@ -42,47 +42,56 @@ get_device_data(unsigned int *working_devices, int nr_active_devices)
 		status = fnLDA_GetAttenuation(working_devices[id]);
 			if (status == INVALID_DEVID
 			    || status == DEVICE_NOT_READY)
-					return strncpy(errmsg ,fnLDA_perror(status), strlen(errmsg));
+				return strncpy(errmsg ,fnLDA_perror(status),
+				     strlen(errmsg));
 
 		status = fnLDA_GetMinAttenuation(working_devices[id]);
 			if (status == INVALID_DEVID
 			    || status == DEVICE_NOT_READY)
-					return strncpy(errmsg ,fnLDA_perror(status), strlen(errmsg));
+				return strncpy(errmsg ,fnLDA_perror(status),
+				     strlen(errmsg));
 		
 		status = fnLDA_GetMaxAttenuation(working_devices[id]);
 			if (status == INVALID_DEVID
 			    || status == DEVICE_NOT_READY)
-					return strncpy(errmsg ,fnLDA_perror(status), strlen(errmsg));
+				return strncpy(errmsg ,fnLDA_perror(status),
+				     strlen(errmsg));
 		
 		status = fnLDA_GetIdleTime(working_devices[id]);
 			if (status == INVALID_DEVID
 			    || status == DEVICE_NOT_READY)
-					return strncpy(errmsg ,fnLDA_perror(status), strlen(errmsg));
+				return strncpy(errmsg ,fnLDA_perror(status),
+				     strlen(errmsg));
 		
 		status = fnLDA_GetDwellTime(working_devices[id]);
 			if (status == INVALID_DEVID
 			    || status == DEVICE_NOT_READY)
-					return strncpy(errmsg ,fnLDA_perror(status), strlen(errmsg));
+				return strncpy(errmsg ,fnLDA_perror(status),
+				     strlen(errmsg));
 		
 		status = fnLDA_GetAttenuationStep(working_devices[id]);
 			if (status == INVALID_DEVID
 			    || status == DEVICE_NOT_READY)
-					return strncpy(errmsg ,fnLDA_perror(status), strlen(errmsg));
+				return strncpy(errmsg ,fnLDA_perror(status),
+				     strlen(errmsg));
 		
 		status = fnLDA_GetRF_On(working_devices[id]);
 			if (status == INVALID_DEVID
 			    || status == DEVICE_NOT_READY)
-					return strncpy(errmsg ,fnLDA_perror(status), strlen(errmsg));
+				return strncpy(errmsg ,fnLDA_perror(status),
+				     strlen(errmsg));
 		
 		status = fnLDA_GetRampStart(working_devices[id]);
 			if (status == INVALID_DEVID
 			    || status == DEVICE_NOT_READY)
-				return strncpy(errmsg ,fnLDA_perror(status), strlen(errmsg));
+				return strncpy(errmsg ,fnLDA_perror(status),
+				     strlen(errmsg));
 
 		status = fnLDA_GetRampEnd(working_devices[id]);
 			if (status == INVALID_DEVID
 			    || status == DEVICE_NOT_READY)
-					return strncpy(errmsg ,fnLDA_perror(status), strlen(errmsg));
+				return strncpy(errmsg ,fnLDA_perror(status),
+				     strlen(errmsg));
 	}
 	return success;
 	
@@ -490,4 +499,5 @@ main(int argc, char *argv[])
 		printf("shut down of device %d was successfull\n", id + 1);
 	}
 	return 1;
+	//TODO: find out, why libusb leaves devices open
 }
