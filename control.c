@@ -147,8 +147,8 @@ get_entry(char* line, int entry)
 	char* token;
 	for (token = strtok(line, ";"); token && *token;
 	     token = strtok(NULL, ";\n")) {
-			if (!--entry)
-				return token;
+		if (!--entry)
+			return token;
 	}
 	return NULL;
 }
@@ -216,7 +216,7 @@ get_parameters(int argc, char *argv[])
 		if (strncmp(argv[i],"-f", strlen(argv[i])) == 0) {
 			ud.path = argv[i + 1];
 			if (strncmp(argv[i + 2], "-r", strlen(argv[i + 2])) == 0)
-					ud.cont = 1;
+				ud.cont = 1;
 			ud.file = 1;
 		}
 		if (strncmp(argv[i], "-a", strlen(argv[i])) == 0) {
@@ -226,19 +226,19 @@ get_parameters(int argc, char *argv[])
 		}
 		if(strncmp(argv[i], "-p", strlen(argv[i])) == 0) {	
 			if (strncmp(argv[i + 1], "-ramp",
-			   strlen(argv[i + 1])) == 0) {
+			    strlen(argv[i + 1])) == 0) {
 				printf("attenuation set to ramp\n");
 				ud.ramp = 1;
 			}
 			else if (strncmp(argv[i + 1], "-sine",
-				strlen(argv[i + 1])) == 0) {
-					printf("attenuation set to sine\n");
-					ud.sine = 1;	
+			    strlen(argv[i + 1])) == 0) {
+				printf("attenuation set to sine\n");
+				ud.sine = 1;	
 			}
 			else if (strncmp(argv[i + 1],"-triangle",
-				strlen(argv[i + 1])) == 0) {
-					printf("attenuation set to triangle\n");
-					ud.triangle = 1;
+			    strlen(argv[i + 1])) == 0) {
+				printf("attenuation set to triangle\n");
+				ud.triangle = 1;
 			}
 		}
 		if (ud.ramp || ud.triangle){
@@ -284,24 +284,24 @@ set_ramp(int id)
 		}
 	}
 	else if (ud.start_att < ud.end_att){
-			fnLDA_SetAttenuation(id, ud.start_att);
-			for(i = 0; i <= (ud.end_att - ud.start_att); i++){
-				sleep(MIKRO_SEC(ud.step_time));
-				cur_att = fnLDA_GetAttenuation(1);
-				printf("cur_att %d\n", cur_att);
-				fnLDA_SetAttenuation(id,
-					cur_att + ud.ramp_steps);
+		fnLDA_SetAttenuation(id, ud.start_att);
+		for(i = 0; i <= (ud.end_att - ud.start_att); i++){
+			sleep(MIKRO_SEC(ud.step_time));
+			cur_att = fnLDA_GetAttenuation(1);
+			printf("cur_att %d\n", cur_att);
+			fnLDA_SetAttenuation(id,
+				cur_att + ud.ramp_steps);
 		}
 	}
 	else if (ud.start_att > ud.end_att){
-			fnLDA_SetAttenuation(id, ud.start_att);
-			for(i = 0; i <= (ud.start_att - ud.end_att); i++){
-				sleep(MIKRO_SEC(ud.step_time));
-				cur_att = fnLDA_GetAttenuation(1);
-				printf("cur_att %d\n", cur_att);
-				fnLDA_SetAttenuation(id,
-					cur_att - ud.ramp_steps);
-			}
+		fnLDA_SetAttenuation(id, ud.start_att);
+		for(i = 0; i <= (ud.start_att - ud.end_att); i++){
+			sleep(MIKRO_SEC(ud.step_time));
+			cur_att = fnLDA_GetAttenuation(1);
+			printf("cur_att %d\n", cur_att);
+			fnLDA_SetAttenuation(id,
+				cur_att - ud.ramp_steps);
+		}
 	}
 }
 
@@ -328,12 +328,11 @@ set_triangle(unsigned int id)
 	//TODO: check if triangle is working correctly
 
 	//TODO: add non cont case
-	printf("in triangle\n");
 	int i, cur_att;
 
+	fnLDA_SetAttenuation(id, ud.start_att);
 	if (ud.cont && (ud.start_att < ud.end_att)) {
 		for(;;) {
-			fnLDA_SetAttenuation(id, ud.start_att);
 			for (i = 1; i <= (ud.end_att - ud.start_att); i++) {
 				sleep(MIKRO_SEC(ud.step_time));
 				cur_att = fnLDA_GetAttenuation(1);
@@ -353,7 +352,6 @@ set_triangle(unsigned int id)
 	}	
 	if (ud.cont && (ud.start_att > ud.end_att)) {
 		for(;;){
-			fnLDA_SetAttenuation(id, ud.start_att);
 			for (i = 0; i < (ud.start_att - ud.end_att); i++) {
 				sleep(MIKRO_SEC(ud.step_time));
 				cur_att = fnLDA_GetAttenuation(1);
