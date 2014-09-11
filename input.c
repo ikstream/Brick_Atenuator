@@ -47,16 +47,17 @@ read_file(char *path, int id)
 	char *tmp;
 	char *endptr;
 	char line[512];
-
-	fp = fopen(path, "r");
 	
-	if(fp == NULL){
+	printf("if check\n");
+	if(fopen(path, "r") == NULL){
 		printf("fp == NULL\n");
 		return -1;
 	}
-
+	fp = fopen(path, "r");
+	printf("opened file\n");
 	fgets(line, LINE_LENGTH, fp);
 	tmp = strdup(line);
+	printf("line 60\n");
 	if (strtol(get_entry(tmp, 3), &endptr, 10) != 0) {
 		printf("more then two entries found in \"%s\"\n", path);
 		printf("there are only two entries supported\n");
@@ -65,7 +66,7 @@ read_file(char *path, int id)
 		printf("proceding with first two entries of:");
 		printf("%s\n", path);
 	}
-
+	printf("before while\n");
 	while (fgets(line, LINE_LENGTH, fp)) {
 		
 		tmp = strdup(line);
@@ -106,7 +107,14 @@ get_parameters(int argc, char *argv[])
 	//TODO: check for order of arguments
 
 	//TODO: fix Problem if argv[i + 1] does not exist
+	if (argc == 2){
+		printf("you are missing parameters for %s\n", argv[1]);
+		printf("\r\nusage:\n");
+		return 0;
+	}
+
 	for (i = 1; i < argc - 1; i++) {
+		printf("0.1\n");
 		if (strncmp(argv[i], "-t", strlen(argv[i])) == 0)
 			ud.atime = atoi(argv[i + 1]);
 
@@ -125,12 +133,17 @@ get_parameters(int argc, char *argv[])
 		if (strncmp(argv[i],"-f", strlen(argv[i])) == 0) {
 			ud.path = argv[i + 1];
 			ud.file = 1;
+			read_file(ud.path, 1);
 		}
 
 		if (strncmp(argv[i], "-a", strlen(argv[i])) == 0) {
+			printf("0.2\n");
 			ud.simple = 1;
-			if ((i + 1) < argc)
+			if ((i + 1) < argc){
+				printf("argc: %d\n", argc);
+				printf("i+1: %i\n", i +1);
 				ud.attenuation = atoi(argv[i + 1]);
+			}
 			else
 				printf("you set the -a switch, but missed to erter an attenuation\n");
 		}

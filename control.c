@@ -404,8 +404,10 @@ main(int argc, char *argv[])
 		return 0;
 	}
 	printf("0\n");
-	if (!get_parameters(argc, argv))
-		return 0;
+	if (!get_parameters(argc, argv)){
+		call_help();
+		return -1;
+	}
 	printf("1\n");
 	fnLDA_Init();
 	printf("2\n");
