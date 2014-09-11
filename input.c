@@ -104,6 +104,8 @@ get_parameters(int argc, char *argv[])
 	//TODO: check for invalid input
 
 	//TODO: check for order of arguments
+
+	//TODO: fix Problem if argv[i + 1] does not exist
 	for (i = 1; i < argc - 1; i++) {
 		if (strncmp(argv[i], "-t", strlen(argv[i])) == 0)
 			ud.atime = atoi(argv[i + 1]);
@@ -126,8 +128,11 @@ get_parameters(int argc, char *argv[])
 		}
 
 		if (strncmp(argv[i], "-a", strlen(argv[i])) == 0) {
-			ud.attenuation = atoi(argv[i + 1]);
 			ud.simple = 1;
+			if ((i + 1) < argc)
+				ud.attenuation = atoi(argv[i + 1]);
+			else
+				printf("you set the -a switch, but missed to erter an attenuation\n");
 		}
 
 		if(strncmp(argv[i], "-p", strlen(argv[i])) == 0) {	
