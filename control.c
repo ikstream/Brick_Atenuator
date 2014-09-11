@@ -36,6 +36,12 @@ get_serial_and_name(int device_count, unsigned int serial, char *device_name)
 	return 1;
 }
 
+int
+print_dev_info(int id)
+{
+	printf("blub\n");
+}
+
 char * 
 get_device_data(unsigned int *working_devices, int nr_active_devices)
 {
@@ -144,6 +150,10 @@ call_help(void)
 	return;
 }
 
+/*
+ * checks if attenutaion is outside of devices limits and sets
+ * attenuation stepwise up or down to get a ramp
+ */
 int 
 set_ramp(int id)
 {
@@ -155,18 +165,18 @@ set_ramp(int id)
 		printf("start attenuation has been set to 0dB\n");
 		ud.start_att = fnLDA_GetMinAttenuation(id);
 	}
-	if (ud.end_att < fnLDA_GetMinAttenuation(id)) {
-		printf("%d is below minumal attenuation of %d\n",
-			ud.end_att, fnLDA_GetMinAttenuation(id));
-		printf("final attenuation has been set to 0dB\n");
-		ud.end_att = fnLDA_GetMinAttenuation(id);
-	}
 	if (ud.start_att > fnLDA_GetMaxAttenuation(id)) {
 		printf("%d is above maximal attenuation of %d\n",
 			ud.start_att, fnLDA_GetMaxAttenuation(id));
 		printf("start attenuation has been set to %d\n",
 			fnLDA_GetMaxAttenuation(id));
 		ud.start_att = fnLDA_GetMaxAttenuation(id);
+	}
+	if (ud.end_att < fnLDA_GetMinAttenuation(id)) {
+		printf("%d is below minumal attenuation of %d\n",
+			ud.end_att, fnLDA_GetMinAttenuation(id));
+		printf("final attenuation has been set to 0dB\n");
+		ud.end_att = fnLDA_GetMinAttenuation(id);
 	}
 	if (ud.end_att > fnLDA_GetMaxAttenuation(id)) {
 		printf("%d is above maximal attenuation of %d\n",
@@ -175,7 +185,6 @@ set_ramp(int id)
 		ud.end_att = fnLDA_GetMaxAttenuation(id);
 	}
 
-	//TODO: check if all ramp options are covered
 	if (ud.cont && (ud.start_att < ud.end_att)) {
 		for(;;) {
 			fnLDA_SetAttenuation(id, ud.start_att);
@@ -261,50 +270,104 @@ set_triangle(unsigned int id)
 {
 	//TODO: check if triangle is working correctly
 
-	//TODO: check for to high or to low attenuation
-
 	//TODO: add non cont case
 	int i, cur_att;
+
+	if (ud.start_att < fnLDA_GetMinAttenuation(id)) {
+		printf("%d is below minumal attenuation of %d\n",
+			ud.start_att, fnLDA_GetMinAttenuation(id));
+		printf("start attenuation has been set to 0dB\n");
+		ud.start_att = fnLDA_GetMinAttenuation(id);
+	}
+	if (ud.start_att > fnLDA_GetMaxAttenuation(id)) {
+		printf("%d is above maximal attenuation of %d\n",
+			ud.start_att, fnLDA_GetMaxAttenuation(id));
+		printf("start attenuation has been set to %d\n",
+			fnLDA_GetMaxAttenuation(id));
+		ud.start_att = fnLDA_GetMaxAttenuation(id);
+	}
+	if (ud.end_att < fnLDA_GetMinAttenuation(id)) {
+		printf("%d is below minumal attenuation of %d\n",
+			ud.end_att, fnLDA_GetMinAttenuation(id));
+		printf("final attenuation has been set to 0dB\n");
+		ud.end_att = fnLDA_GetMinAttenuation(id);
+	}
+	if (ud.end_att > fnLDA_GetMaxAttenuation(id)) {
+		printf("%d is above maximal attenuation of %d\n",
+			ud.end_att, fnLDA_GetMaxAttenuation(id));
+		printf("final attenuation has been set to %d\n");
+		ud.end_att = fnLDA_GetMaxAttenuation(id);
+	}
 
 	fnLDA_SetAttenuation(id, ud.start_att);
 	if (ud.cont && (ud.start_att < ud.end_att)) {
 		for(;;) {
 			for (i = 1; i <= (ud.end_att - ud.start_att); i++) {
 				sleep(MIKRO_SEC(ud.step_time));
-				cur_att = fnLDA_GetAttenuation(1);
+				cur_att = fnLDA_GetAttenuation(id);
 				printf("cur_att %d\n", cur_att);
 				fnLDA_SetAttenuation(id,
 					cur_att + ud.ramp_steps);
 			}
 			for (i = ud.end_att; i > (ud.end_att - ud.start_att); i--) {
 				sleep(MIKRO_SEC(ud.step_time));
-				cur_att = fnLDA_GetAttenuation(1);
+				cur_att = fnLDA_GetAttenuation(id);
 				printf("cur_att %d\n", cur_att);
 				fnLDA_SetAttenuation(id,
 					cur_att - ud.ramp_steps);
 			}
 			fnLDA_SetAttenuation(id, ud.start_att);
 		}
+	}
+	if (ud.start_att < ud.end_att) {
+		for (i = 1; i <= (ud.end_att - ud.start_att); i++) {
+			sleep(MIKRO_SEC(ud.step_time));
+			cur_att = fnLDA_GetAttenuation(id);
+			printf("cur_att %d\n", cur_att);
+			fnLDA_SetAttenuation(id, cur_att + ud.ramp_steps);
+		}
+		for (i = ud.end_att; i > (ud.end_att - ud.start_att); i--) {
+			sleep(MIKRO_SEC(ud.step_time));
+			cur_att = fnLDA_GetAttenuation(id);
+			printf("cur_att %d\n", cur_att);
+			fnLDA_SetAttenuation(id, cur_att - ud.ramp_steps);
+		}
+			fnLDA_SetAttenuation(id, ud.start_att);
 	}	
 	if (ud.cont && (ud.start_att > ud.end_att)) {
 		for(;;) {
 			for (i = 0; i < (ud.start_att - ud.end_att); i++) {
 				sleep(MIKRO_SEC(ud.step_time));
-				cur_att = fnLDA_GetAttenuation(1);
+				cur_att = fnLDA_GetAttenuation(id);
 				printf("cur_att %d\n", cur_att);
 				fnLDA_SetAttenuation(id,
 					cur_att - ud.ramp_steps);
 			}
 			for (i = 1; i <= (ud.start_att - ud.end_att); i++) {
 				sleep(MIKRO_SEC(ud.step_time));
-				cur_att = fnLDA_GetAttenuation(1);
+				cur_att = fnLDA_GetAttenuation(id);
 				printf("cur_att %d\n", cur_att);
 				fnLDA_SetAttenuation(id,
 					cur_att + ud.ramp_steps);
 			}
 			fnLDA_SetAttenuation(id, ud.start_att);
 		}
-	}	
+	}
+	if (ud.start_att > ud.end_att) {
+		for (i = 0; i < (ud.start_att - ud.end_att); i++) {
+			sleep(MIKRO_SEC(ud.step_time));
+			cur_att = fnLDA_GetAttenuation(id);
+			printf("cur_att %d\n", cur_att);
+			fnLDA_SetAttenuation(id, cur_att - ud.ramp_steps);
+		}
+		for (i = 1; i <= (ud.start_att - ud.end_att); i++) {
+			sleep(MIKRO_SEC(ud.step_time));
+			cur_att = fnLDA_GetAttenuation(id);
+			printf("cur_att %d\n", cur_att);
+			fnLDA_SetAttenuation(id, cur_att + ud.ramp_steps);
+		}
+		fnLDA_SetAttenuation(id, ud.start_att);
+	}
 }
 
 //TODO: implement set_sine function
@@ -318,7 +381,7 @@ main(int argc, char *argv[])
 	int serial, parameter_status;
 	DEVID working_devices[MAXDEVICES];
 	char device_name[MAX_MODELNAME];
-	char *messages, *tmp;
+	char *messages, *tmp, *version;
 	
 	//TODO: make input overflow safe
 	char *input = "";
@@ -332,7 +395,7 @@ main(int argc, char *argv[])
 		return -1;
 	}
 	if (argc < 2) {
-		printf("Error: usage: brick [-option] \n");
+		printf("usage: brick [-option] \n");
 		printf("for a list of options type brick -h\n");
 		return -1;
 	}
@@ -340,24 +403,30 @@ main(int argc, char *argv[])
 		call_help();	
 		return 0;
 	}
+	printf("0\n");
 	if (!get_parameters(argc, argv))
 		return 0;
+	printf("1\n");
 	fnLDA_Init();
-
-	
-	char *version = fnLDA_LibVersion();
-
+	printf("2\n");
+	version = fnLDA_LibVersion();
+	printf("3\n");
 	fnLDA_SetTestMode(FALSE);
+	printf("4\n");
 	
 	//TODO: check in intervalls if connected devices have been 
 	//exchanged or disconnected 
 	device_count = fnLDA_GetNumDevices();
-
+	
 	printf("you are using libversion %s\n", version);
-	if (device_count > 1)
+	
+	if (device_count == 0)
+		printf("There is no attenuator connected\n");
+	else if (device_count > 1)
 		printf("There are %d atenuators connected\n", device_count);
 	else
 		printf("There is %d atenuator connected\n", device_count);
+
 	get_serial_and_name(device_count, serial, device_name);
 	nr_active_devices = fnLDA_GetDevInfo(working_devices);
 	printf("%d active devices found\n", nr_active_devices);
@@ -386,6 +455,7 @@ main(int argc, char *argv[])
 	printf("You can set attenuation steps in %ddB steps\n",
 		(fnLDA_GetDevResolution(1) / 4));
 	print_userdata();
+	
 	/*
 	 * Set device as specified by user
 	 */

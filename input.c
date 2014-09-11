@@ -41,7 +41,7 @@ int
 read_file(char *path, int id)
 {
 	//TODO check if file in path is a .csv file
-
+	printf("read file\n");
 	int i = 0;
 	FILE *fp;
 	char *tmp;
@@ -50,8 +50,10 @@ read_file(char *path, int id)
 
 	fp = fopen(path, "r");
 	
-	if(fp == NULL)
+	if(fp == NULL){
+		printf("fp == NULL\n");
 		return -1;
+	}
 
 	fgets(line, LINE_LENGTH, fp);
 	tmp = strdup(line);
@@ -97,6 +99,7 @@ int
 get_parameters(int argc, char *argv[])
 {
 	int i;
+	//TODO: let user set ramp, triangle and/or sine after each other
 
 	//TODO: check for invalid input
 
@@ -119,8 +122,6 @@ get_parameters(int argc, char *argv[])
 
 		if (strncmp(argv[i],"-f", strlen(argv[i])) == 0) {
 			ud.path = argv[i + 1];
-			if (strncmp(argv[i + 2], "-r", strlen(argv[i + 2])) == 0)
-				ud.cont = 1;
 			ud.file = 1;
 		}
 
@@ -141,7 +142,7 @@ get_parameters(int argc, char *argv[])
 				ud.triangle = 1;
 		}
 
-		if (ud.ramp || ud.triangle) {
+		if (ud.ramp || ud.triangle || ud.file) {
 			if (strncmp(argv[i], "-r", strlen(argv[i]))
 			    == 0)
 				ud.cont = 1;
@@ -193,10 +194,4 @@ clear_userdata(void)
 	ud.step_time = SLEEP_TIME;
 	ud.simple = 0;
 	ud.file = 0;
-}
-
-int
-print_dev_info(int id)
-{
-	printf("blub\n");
 }
