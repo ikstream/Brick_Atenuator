@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "input.h"
 #include "LDAhid.h"
 
@@ -40,59 +41,77 @@ get_entry(char* line, int entry)
 int
 read_file(char *path, int id)
 {
-	//TODO check if file in path is a .csv file
-	printf("read file\n");
+	//TODO: check if more then two entries in file
+
+	//TODO: check if file in path is a .csv file
 	int i = 0;
+	int isDigit = 0;
 	FILE *fp;
-	char *tmp;
-	char *endptr;
-	char line[512];
+	char *tmp, *endptr;
+	char line[LINE_LENGTH];
+	char atime[250];
+	char att[6];
 	
-	printf("if check\n");
 	if(fopen(path, "r") == NULL){
 		printf("fp == NULL\n");
 		return -1;
 	}
 	fp = fopen(path, "r");
-	printf("opened file\n");
 	fgets(line, LINE_LENGTH, fp);
 	tmp = strdup(line);
-	printf("line 60\n");
-	if (strtol(get_entry(tmp, 3), &endptr, 10) != 0) {
-		printf("more then two entries found in \"%s\"\n", path);
-		printf("there are only two entries supported\n");
-		printf("file should have the format:\n");
-		printf("time per step;attenuation per step\n");
-		printf("proceding with first two entries of:");
-		printf("%s\n", path);
-	}
+
 	printf("before while\n");
 	while (fgets(line, LINE_LENGTH, fp)) {
 		
-		tmp = strdup(line);
-		strtol(get_entry(tmp, TIME), &endptr, 10);
-		if ( endptr == NULL) {
+		strncpy(atime, get_entry(strdup(line),TIME), strlen(atime));
+		printf("copied\n");
+
+		/*
+		printf("str:%s\n", atime);
+		for (i = 0; i < strlen(atime); i++) {
+			printf("atime[%d]: %c\n", i, atime[i]);
+			printf("i: %d\n", i);
+			printf("strlen: %d\n", strlen(get_entry(tmp,TIME)));
+			if (!isdigit(atime[i])) {
+				printf("\"%s\" is no valid time\n", get_entry(tmp, 1));
+				printf("%d\n", atime[i]);
+				break;
+			}
 			ud.atime = atoi(get_entry(tmp, TIME));
 			printf("ud.atime: %d\n", ud.atime);
 		}
-		else
-			printf("\"%s\" is no valid time\n", get_entry(tmp, 1));
+		printf("left first for\n");
+		*/
 
-		tmp = strdup(line);
-		strtol(get_entry(tmp, ATT), &endptr, 10);
-		if ( endptr == NULL) {
-			ud.attenuation = atoi(get_entry(tmp,ATT));
-			printf("ud.attenuation: %d\n", ud.attenuation);
+		/*
+		strtol(get_entry(tmp, TIME), &endptr, 10);
+		if ( endptr != NULL) {
 		}
 		else
-			printf("\"%s\" is no valid attenuation\n",
-				get_entry(tmp, ATT));
+			printf("\"%s\" is no valid time\n", get_entry(tmp, 1));
+		*/
+		/*
+		tmp = strdup(line);
+		for (i = 0; i < strlen(get_entry(tmp,ATT)); i++) {
+			printf("in seccond for\n");
+			if (isdigit(str)) {
+				printf("str: %s\n", str);
+				printf("\"%s\" is no valid attenuation\n", get_entry(tmp, 1));
+				break;
+			}
+		}
+		ud.attenuation = atoi(get_entry(tmp,ATT));
+		printf("ud.attenuation: %d\n", ud.attenuation);
+		*/
+
 		set_attenuation(id);
 		free(tmp);
 	}
+	printf("left while\n");
 	fclose(fp);
 	return 1;
 }
+
 /*
  * gets the command line parameters and sets userdata parameters
  */
@@ -114,7 +133,18 @@ get_parameters(int argc, char *argv[])
 	}
 
 	for (i = 1; i < argc - 1; i++) {
-		printf("0.1\n");
+		if (strncmp(argv[i], "-a", strlen(argv[i])) == 0) {
+			printf("0.2\n");
+			ud.simple = 1;
+			if ((i + 1) < argc){
+				printf("argc: %d\n", argc);
+				printf("i+1: %i\n", i +1);
+				ud.attenuation = atoi(argv[i + 1]);
+			}
+			else
+				printf("you set the -a switch, but missed to erter an attenuation\n");
+		}
+
 		if (strncmp(argv[i], "-t", strlen(argv[i])) == 0)
 			ud.atime = atoi(argv[i + 1]);
 
@@ -136,17 +166,6 @@ get_parameters(int argc, char *argv[])
 			read_file(ud.path, 1);
 		}
 
-		if (strncmp(argv[i], "-a", strlen(argv[i])) == 0) {
-			printf("0.2\n");
-			ud.simple = 1;
-			if ((i + 1) < argc){
-				printf("argc: %d\n", argc);
-				printf("i+1: %i\n", i +1);
-				ud.attenuation = atoi(argv[i + 1]);
-			}
-			else
-				printf("you set the -a switch, but missed to erter an attenuation\n");
-		}
 
 		if(strncmp(argv[i], "-p", strlen(argv[i])) == 0) {	
 			if (strncmp(argv[i + 1], "-ramp",
