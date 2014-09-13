@@ -57,17 +57,31 @@ read_file(char *path, int id)
 		return -1;
 	}
 	fp = fopen(path, "r");
-	fgets(line, LINE_LENGTH, fp);
-	tmp = strdup(line);
+//	fgets(line, LINE_LENGTH, fp);
 
+	while (fgets(line, LINE_LENGTH, fp)) {
+		tmp = strdup(line);
+		ud.atime = atoi(get_entry(tmp, TIME));
+		printf("ud.atime: %d\n", ud.atime);
+		tmp = strdup(line);
+		ud.attenuation = atoi(get_entry(tmp, ATT));
+		printf("ud.attenuation: %d\n", ud.attenuation);
+		set_attenuation(id);
+		free(tmp);
+	}
+
+	printf("left while\n");
+	fclose(fp);
+	return 1;
+	/*
 	printf("before while\n");
 	while (fgets(line, LINE_LENGTH, fp)) {
+		tmp = strdup(line);
 		
 		strncpy(atime, get_entry(strdup(line),TIME), strlen(atime));
-		printf("copied\n");
+		printf("copied value\n");
 
-		/*
-		printf("str:%s\n", atime);
+		printf("time:%s\n", atime);
 		for (i = 0; i < strlen(atime); i++) {
 			printf("atime[%d]: %c\n", i, atime[i]);
 			printf("i: %d\n", i);
@@ -77,12 +91,31 @@ read_file(char *path, int id)
 				printf("%d\n", atime[i]);
 				break;
 			}
-			ud.atime = atoi(get_entry(tmp, TIME));
+
+			ud.atime = atoi(get_entry(atime, TIME));
 			printf("ud.atime: %d\n", ud.atime);
 		}
 		printf("left first for\n");
-		*/
 
+
+		strncpy(att, get_entry(strdup(line),ATT), strlen(att));
+		printf("copied time\n");
+
+		printf("attenuation:%s\n", att);
+		for (i = 0; i < strlen(att); i++) {
+			printf("attenuation[%d]: %c\n", i, att[i]);
+			printf("i: %d\n", i);
+			printf("strlen: %d\n", strlen(get_entry(tmp,ATT)));
+			if (!isdigit(att[i])) {
+				printf("\"%s\" is no valid attenuation\n", get_entry(tmp, ATT));
+				printf("%d\n", att[i]);
+				break;
+			}
+
+			ud.attenuation = atoi(get_entry(att, ATT));
+			printf("ud.attenuation: %d\n", ud.attenuation);
+		}
+		*/
 		/*
 		strtol(get_entry(tmp, TIME), &endptr, 10);
 		if ( endptr != NULL) {
@@ -104,12 +137,8 @@ read_file(char *path, int id)
 		printf("ud.attenuation: %d\n", ud.attenuation);
 		*/
 
-		set_attenuation(id);
-		free(tmp);
-	}
-	printf("left while\n");
-	fclose(fp);
-	return 1;
+		//set_attenuation(id);
+		//free(tmp);
 }
 
 /*
