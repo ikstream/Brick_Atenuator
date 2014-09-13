@@ -110,7 +110,6 @@ get_device_data(unsigned int *working_devices, int nr_active_devices)
 void
 call_help(void)
 {
-	//TODO: bring options in sensible order
 	printf("-to show this overview use\n");
 	printf("\t-h\n");
 	printf("\r\n");
@@ -245,8 +244,8 @@ set_attenuation(unsigned int id)
 	if (ud.attenuation < fnLDA_GetMinAttenuation(id)) {
 		printf("%d is below minumal attenuation of %d\n",
 			ud.attenuation, fnLDA_GetMinAttenuation(id));
-		printf("attenuation has been set to 0dB\n");
-		fnLDA_SetAttenuation(id, 0);
+		printf("attenuation has been set to %ddB\n", fnLDA_GetMinAttenuation(id));
+		fnLDA_SetAttenuation(id, fnLDA_GetMinAttenuation(id));
 		sleep(MIKRO_SEC(ud.atime));
 		return 1;
 	}
@@ -260,7 +259,7 @@ set_attenuation(unsigned int id)
 		return 1;
 	}
 	fnLDA_SetAttenuation(id, (ud.attenuation * 4));
-	printf("set device to %ddB attenuation\n", fnLDA_GetAttenuation(1));
+	printf("set device to %ddB attenuation\n", fnLDA_GetAttenuation(id));
 	sleep(MIKRO_SEC(ud.atime));
 	return 1;
 }
@@ -403,18 +402,13 @@ main(int argc, char *argv[])
 		call_help();	
 		return 0;
 	}
-	printf("0\n");
 	if (!get_parameters(argc, argv)){
 		call_help();
 		return -1;
 	}
-	printf("1\n");
 	fnLDA_Init();
-	printf("2\n");
 	version = fnLDA_LibVersion();
-	printf("3\n");
 	fnLDA_SetTestMode(FALSE);
-	printf("4\n");
 	
 	//TODO: check in intervalls if connected devices have been 
 	//exchanged or disconnected 
@@ -461,7 +455,7 @@ main(int argc, char *argv[])
 	/*
 	 * Set device as specified by user
 	 */
-	fnLDA_SetAttenuation(1, 0);
+
 	for (id = 1; id <= nr_active_devices; id++) {
 		if (ud.sine == 1) {
 			/* TODO call sine_function which will set ramp form
