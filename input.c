@@ -71,10 +71,8 @@ read_file(char *path, int id)
 	while (fgets(line, LINE_LENGTH, fp)) {
 		tmp = strdup(line);
 		ud.atime = atoi(get_entry(tmp, TIME));
-		printf("ud.atime: %d\n", ud.atime);
 		tmp = strdup(line);
 		ud.attenuation = atoi(get_entry(tmp, ATT));
-		printf("ud.attenuation: %d\n", ud.attenuation);
 		set_attenuation(id);
 		tmp = strdup(line);
 		if ((void*)atoi(get_entry(tmp, 3)) != NULL) {
@@ -86,75 +84,8 @@ read_file(char *path, int id)
 		free(tmp);
 	}
 
-	printf("left while\n");
 	fclose(fp);
 	return 1;
-	/*
-	printf("before while\n");
-	while (fgets(line, LINE_LENGTH, fp)) {
-		tmp = strdup(line);
-		
-		strncpy(atime, get_entry(strdup(line),TIME), strlen(atime));
-		printf("copied value\n");
-
-		printf("time:%s\n", atime);
-		for (i = 0; i < strlen(atime); i++) {
-			printf("atime[%d]: %c\n", i, atime[i]);
-			printf("i: %d\n", i);
-			printf("strlen: %d\n", strlen(get_entry(tmp,TIME)));
-			if (!isdigit(atime[i])) {
-				printf("\"%s\" is no valid time\n", get_entry(tmp, 1));
-				printf("%d\n", atime[i]);
-				break;
-			}
-
-			ud.atime = atoi(get_entry(atime, TIME));
-			printf("ud.atime: %d\n", ud.atime);
-		}
-		printf("left first for\n");
-
-
-		strncpy(att, get_entry(strdup(line),ATT), strlen(att));
-		printf("copied time\n");
-
-		printf("attenuation:%s\n", att);
-		for (i = 0; i < strlen(att); i++) {
-			printf("attenuation[%d]: %c\n", i, att[i]);
-			printf("i: %d\n", i);
-			printf("strlen: %d\n", strlen(get_entry(tmp,ATT)));
-			if (!isdigit(att[i])) {
-				printf("\"%s\" is no valid attenuation\n", get_entry(tmp, ATT));
-				printf("%d\n", att[i]);
-				break;
-			}
-
-			ud.attenuation = atoi(get_entry(att, ATT));
-			printf("ud.attenuation: %d\n", ud.attenuation);
-		}
-		*/
-		/*
-		strtol(get_entry(tmp, TIME), &endptr, 10);
-		if ( endptr != NULL) {
-		}
-		else
-			printf("\"%s\" is no valid time\n", get_entry(tmp, 1));
-		*/
-		/*
-		tmp = strdup(line);
-		for (i = 0; i < strlen(get_entry(tmp,ATT)); i++) {
-			printf("in seccond for\n");
-			if (isdigit(str)) {
-				printf("str: %s\n", str);
-				printf("\"%s\" is no valid attenuation\n", get_entry(tmp, 1));
-				break;
-			}
-		}
-		ud.attenuation = atoi(get_entry(tmp,ATT));
-		printf("ud.attenuation: %d\n", ud.attenuation);
-		*/
-
-		//set_attenuation(id);
-		//free(tmp);
 }
 
 /*
@@ -239,12 +170,11 @@ get_parameters(int argc, char *argv[])
 			}
 			ud.path = argv[i + 1];
 			ud.file = 1;
-			//read_file(ud.path, 1);
 		}
 
 		if (strncmp(argv[i], "-r", strlen(argv[i])) == 0)
 				ud.cont = 1;
-
+	
 		if(strncmp(argv[i], "-p", strlen(argv[i])) == 0) {	
 			if (strncmp(argv[i + 1], "-ramp",
 			    strlen(argv[i + 1])) == 0)
@@ -302,4 +232,5 @@ clear_userdata(void)
 	ud.step_time = SLEEP_TIME;
 	ud.simple = 0;
 	ud.file = 0;
+	ud.path = "";
 }
