@@ -192,7 +192,7 @@ get_parameters(int argc, char *argv[])
 		if (strncmp(argv[i],"-f", strlen(argv[i])) == 0) {
 			ud.path = argv[i + 1];
 			ud.file = 1;
-			read_file(ud.path, 1);
+			//read_file(ud.path, 1);
 		}
 
 

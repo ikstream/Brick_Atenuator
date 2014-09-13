@@ -461,7 +461,8 @@ main(int argc, char *argv[])
 	/*
 	 * Set device as specified by user
 	 */
-	fnLDA_SetAttenuation(1, 0);
+	//fnLDA_SetAttenuation(1, 0);
+	printf("starting functions\n");
 	for (id = 1; id <= nr_active_devices; id++) {
 		if (ud.sine == 1) {
 			/* TODO call sine_function which will set ramp form
