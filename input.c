@@ -173,7 +173,7 @@ get_parameters(int argc, char *argv[])
 
 		if (strncmp(argv[i], "-r", strlen(argv[i])) == 0)
 				ud.cont = 1;
-	
+
 		if(strncmp(argv[i], "-p", strlen(argv[i])) == 0) {	
 			if (strncmp(argv[i + 1], "-ramp",
 			    strlen(argv[i + 1])) == 0)
