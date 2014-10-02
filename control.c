@@ -191,7 +191,9 @@ set_ramp(int id)
 			for(i = 0; i <= (ud.end_att - ud.start_att); i++) {
 				sleep(MIKRO_SEC(ud.step_time));
 				cur_att = fnLDA_GetAttenuation(1);
+#ifdef DEBUG
 				printf("cur_att %d\n", cur_att);
+#endif
 				fnLDA_SetAttenuation(id,
 					cur_att + ud.ramp_steps);
 			}
@@ -203,7 +205,9 @@ set_ramp(int id)
 			for(i = 0; i <= (ud.start_att - ud.end_att); i++) {
 				sleep(MIKRO_SEC(ud.step_time));
 				cur_att = fnLDA_GetAttenuation(1);
+#ifdef DEBUG
 				printf("cur_att %d\n", cur_att);
+#endif
 				fnLDA_SetAttenuation(id,
 					cur_att - ud.ramp_steps);
 			}
@@ -214,7 +218,9 @@ set_ramp(int id)
 		for(i = 0; i <= (ud.end_att - ud.start_att); i++) {
 			sleep(MIKRO_SEC(ud.step_time));
 			cur_att = fnLDA_GetAttenuation(1);
+#ifdef DEBUG
 			printf("cur_att %d\n", cur_att);
+#endif
 			fnLDA_SetAttenuation(id,
 				cur_att + ud.ramp_steps);
 		}
@@ -224,7 +230,9 @@ set_ramp(int id)
 		for(i = 0; i <= (ud.start_att - ud.end_att); i++) {
 			sleep(MIKRO_SEC(ud.step_time));
 			cur_att = fnLDA_GetAttenuation(1);
+#ifdef DEBUG
 			printf("cur_att %d\n", cur_att);
+#endif
 			fnLDA_SetAttenuation(id,
 				cur_att - ud.ramp_steps);
 		}
@@ -270,7 +278,6 @@ set_triangle(unsigned int id)
 {
 	//TODO: check if triangle is working correctly
 
-	//TODO: add non cont case
 	int i, cur_att;
 
 	if (ud.start_att < fnLDA_GetMinAttenuation(id)) {
@@ -305,14 +312,18 @@ set_triangle(unsigned int id)
 			for (i = 1; i <= (ud.end_att - ud.start_att); i++) {
 				sleep(MIKRO_SEC(ud.step_time));
 				cur_att = fnLDA_GetAttenuation(id);
+#ifdef DEBUG
 				printf("cur_att %d\n", cur_att);
+#endif
 				fnLDA_SetAttenuation(id,
 					cur_att + ud.ramp_steps);
 			}
 			for (i = ud.end_att; i > (ud.end_att - ud.start_att); i--) {
 				sleep(MIKRO_SEC(ud.step_time));
 				cur_att = fnLDA_GetAttenuation(id);
+#ifdef DEBUG
 				printf("cur_att %d\n", cur_att);
+#endif
 				fnLDA_SetAttenuation(id,
 					cur_att - ud.ramp_steps);
 			}
@@ -323,13 +334,17 @@ set_triangle(unsigned int id)
 		for (i = 1; i <= (ud.end_att - ud.start_att); i++) {
 			sleep(MIKRO_SEC(ud.step_time));
 			cur_att = fnLDA_GetAttenuation(id);
+#ifdef DEBUG
 			printf("cur_att %d\n", cur_att);
+#endif
 			fnLDA_SetAttenuation(id, cur_att + ud.ramp_steps);
 		}
 		for (i = ud.end_att; i > (ud.end_att - ud.start_att); i--) {
 			sleep(MIKRO_SEC(ud.step_time));
 			cur_att = fnLDA_GetAttenuation(id);
+#ifdef DEBUG
 			printf("cur_att %d\n", cur_att);
+#endif
 			fnLDA_SetAttenuation(id, cur_att - ud.ramp_steps);
 		}
 			fnLDA_SetAttenuation(id, ud.start_att);
@@ -339,14 +354,18 @@ set_triangle(unsigned int id)
 			for (i = 0; i < (ud.start_att - ud.end_att); i++) {
 				sleep(MIKRO_SEC(ud.step_time));
 				cur_att = fnLDA_GetAttenuation(id);
+#ifdef DEBUG
 				printf("cur_att %d\n", cur_att);
+#endif
 				fnLDA_SetAttenuation(id,
 					cur_att - ud.ramp_steps);
 			}
 			for (i = 1; i <= (ud.start_att - ud.end_att); i++) {
 				sleep(MIKRO_SEC(ud.step_time));
 				cur_att = fnLDA_GetAttenuation(id);
+#ifdef DEBUG
 				printf("cur_att %d\n", cur_att);
+#endif
 				fnLDA_SetAttenuation(id,
 					cur_att + ud.ramp_steps);
 			}
@@ -357,13 +376,17 @@ set_triangle(unsigned int id)
 		for (i = 0; i < (ud.start_att - ud.end_att); i++) {
 			sleep(MIKRO_SEC(ud.step_time));
 			cur_att = fnLDA_GetAttenuation(id);
+#ifdef DEBUG
 			printf("cur_att %d\n", cur_att);
+#endif
 			fnLDA_SetAttenuation(id, cur_att - ud.ramp_steps);
 		}
 		for (i = 1; i <= (ud.start_att - ud.end_att); i++) {
 			sleep(MIKRO_SEC(ud.step_time));
 			cur_att = fnLDA_GetAttenuation(id);
+#ifdef DEBUG
 			printf("cur_att %d\n", cur_att);
+#endif
 			fnLDA_SetAttenuation(id, cur_att + ud.ramp_steps);
 		}
 		fnLDA_SetAttenuation(id, ud.start_att);
@@ -431,7 +454,8 @@ main(int argc, char *argv[])
 
 	get_serial_and_name(device_count, serial, device_name);
 	nr_active_devices = fnLDA_GetDevInfo(working_devices);
-	printf("%d active devices found\n", nr_active_devices);
+	if (device_count > 0)
+		printf("%d active devices found\n", nr_active_devices);
 
 
 	for (id = 0; id < nr_active_devices; id++) {
@@ -452,17 +476,22 @@ main(int argc, char *argv[])
 		printf("initialized device %d successfully\n", id + 1);
 	}
 
-	messages = get_device_data(working_devices, nr_active_devices);
-	printf("%s\n", messages);
-	printf("You can set attenuation steps in %ddB steps\n",
-		(fnLDA_GetDevResolution(1) / 4));
+	if (device_count > 1) {
+		messages = get_device_data(working_devices, nr_active_devices);
+		printf("%s\n", messages);
+		printf("You can set attenuation steps in %ddB steps\n",
+			(fnLDA_GetDevResolution(1) / 4));
+	}
 	print_userdata();
 	
 	/*
 	 * Set device as specified by user
 	 */
-	//fnLDA_SetAttenuation(1, 0);
+#ifdef DEBUG
 	printf("starting functions\n");
+	printf("ud.file: %d\n", ud.file);
+	printf("ud.cont: %d\n", ud.cont);
+#endif
 	for (id = 1; id <= nr_active_devices; id++) {
 		if (ud.sine == 1) {
 			/* TODO call sine_function which will set ramp form
@@ -477,6 +506,8 @@ main(int argc, char *argv[])
 		else if (ud.simple == 1)
 			set_attenuation(id);
 		else if (ud.file && ud.cont) {
+			printf("ud.file: %d\n", ud.file);
+			printf("ud.cont: %d\n", ud.cont);
 			for(;;)
 				read_file(ud.path, id);
 		}

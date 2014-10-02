@@ -195,6 +195,8 @@ get_parameters(int argc, char *argv[])
 			//read_file(ud.path, 1);
 		}
 
+		if (strncmp(argv[i], "-r", strlen(argv[i])) == 0)
+				ud.cont = 1;
 
 		if(strncmp(argv[i], "-p", strlen(argv[i])) == 0) {	
 			if (strncmp(argv[i + 1], "-ramp",
@@ -207,13 +209,6 @@ get_parameters(int argc, char *argv[])
 			    strlen(argv[i + 1])) == 0)
 				ud.triangle = 1;
 		}
-
-		if (ud.ramp || ud.triangle || ud.file) {
-			if (strncmp(argv[i], "-r", strlen(argv[i]))
-			    == 0)
-				ud.cont = 1;
-		}
-
 	}
 	return 1;
 }
