@@ -485,9 +485,9 @@ main(int argc, char *argv[])
 		else
 			print_dev_info(id);
 	}
-
 	messages = get_device_data(working_devices, nr_active_devices);
 	printf("%s\n", messages);
+
 	print_userdata();
 	
 	/*

@@ -195,7 +195,7 @@ get_parameters(int argc, char *argv[])
 			    strlen(argv[i + 1])) == 0)
 				ud.triangle = 1;
 		}
-		
+				
 		if (strncmp(argv[i], "-r", strlen(argv[i])) == 0) {
 			ud.cont = 1;
 		}
