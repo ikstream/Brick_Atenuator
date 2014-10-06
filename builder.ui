@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+	<object id="window" class="GtkWindow">
+		<property name="visible">True</property>
+		<property name="title">BMI</property>
+		<property name="border-width">15</property>
+
+		<child>
+			<object id="grid" class="GtkGrid">
+				<property name="visible">True</property>
+				
+				<child>
+					<object id="bodylabel" class="GtkLabel">
+						<property name="visible">True</property>
+						<property name="label">Körperteil</property>
+					</object>
+					<packing>
+						<property name="left-attach">0</property>
+						<property name="top-attach">0</property>
+						<property name="width">2</property>
+					</packing>
+				</child>
+
+				<child>
+					<object id="torso" class="GtkCheckButton">
+						<property name="visible">True</property>
+						<property name="label">Rumpf ohne Extremitäten</property>
+					</object>
+					<packing>
+						<property name="left-attach">0</property>
+						<property name="top-attach">1</property>
+					</packing>
+				</child>
+
+				<child>
+					<object id="leftlabel" class="GtkLabel">
+						<property name="visible">True</property>
+						<property name="label">links fehlt</property>
+					</object>
+					<packing>
+						<property name="left-attach">0</property>
+						<property name="top-attach">2</property>
+					</packing>
+				</child>
+				
+				<child>
+					<object id="hand" class="GtkCheckButton">
+						<property name="visible">True</property>
+						<property name="label">Hand</property>
+					</object>
+					<packing>
+						<property name="left-attach">0</property>
+						<property name="top-attach">3</property>
+					</packing>
+				</child>
+				
+				
+				
+				<child>
+					<object id="leg" class="GtkCheckButton">
+						<property name="visible">True</property>
+						<property name="label">Gesamtes Bein</property>
+					</object>
+					<packing>
+						<property name="left-attach">0</property>
+						<property name="top-attach">12</property>
+					</packing>
+				</child>
+				
+				<child>
+					<object id="quit" class="GtkButton">
+						<property name="visible">True</property>
+						<property name="label">Beenden</property>
+					</object>
+					<packing>
+						<property name="left-attach">0</property>
+						<property name="top-attach">13</property>
+						<property name="width">2</property>
+					</packing>
+				</child>
+
+				<child>
+					<object id="rightlabel" class="GtkLabel">
+						<property name="visible">True</property>
+						<property name="label">rechts fehlt</property>
+					</object>
+					<packing>
+						<property name="left-attach">1</property>
+						<property name="top-attach">2</property>
+					</packing>
+				</child>
+
+				<child>
+					<object id="hand_right" class="GtkCheckButton">
+						<property name="visible">True</property>
+						<property name="label">Hand</property>
+					</object>
+					<packing>
+						<property name="left-attach">1</property>
+						<property name="top-attach">3</property>
+					</packing>
+				</child>
+				
+				
+				<child>
+					<object id="heightlabel" class="GtkLabel">
+						<property name="visible">True</property>
+						<property name="label">Größe</property>
+					</object>
+					<packing>
+						<property name="left-attach">2</property>
+						<property name="top-attach">0</property>
+					</packing>
+				</child>
+
+				<child>
+	  			<object id="height" class="GtkSpinButton">
+	    			<property name="visible">True</property>
+	  			</object>
+	  			<packing>
+	    			<property name="left-attach">2</property>
+	    			<property name="top-attach">1</property>
+	  			</packing>
+				</child>
+
+				<child>
+					<object id="weightlabel" class="GtkLabel">
+						<property name="visible">True</property>
+						<property name="label">Gewicht</property>
+					</object>
+					<packing>
+						<property name="left-attach">2</property>
+						<property name="top-attach">2</property>
+					</packing>
+				</child>
+
+				<child>
+					<object id="weight" class="GtkSpinButton">
+						<property name="visible">True</property>
+					</object>
+					<packing>
+						<property name="left-attach">2</property>
+						<property name="top-attach">3</property>
+					</packing>
+				</child>
+
+				<child>
+					<object id="calculate" class="GtkButton">
+						<property name="visible">True</property>
+						<property name="label">BMI berechnen</property>
+					</object>
+					<packing>
+						<property name="left-attach">2</property>
+						<property name="top-attach">4</property>
+					</packing>
+				</child>
+
+				<child>
+					<object id="cmlabel" class="GtkLabel">
+						<property name="visible">True</property>
+						<property name="label">cm</property>
+					</object>
+					<packing>
+						<property name="left-attach">3</property>
+						<property name="top-attach">1</property>
+					</packing>
+				</child>
+
+				<child>
+					<object id="kglabel" class="GtkLabel">
+						<property name="visible">True</property>
+						<property name="label">kg</property>
+					</object>
+					<packing>
+						<property name="left-attach">3</property>
+						<property name="top-attach">3</property>
+					</packing>
+				</child>
+
+				<child>
+					<object id="bmilabel" class="GtkLabel">
+						<property name="visible">True</property>
+						<property name="label">BMI:</property>
+					</object>
+					<packing>
+						<property name="left-attach">2</property>
+						<property name="top-attach">5</property>
+					</packing>
+				</child>
+
+				<child>
+					<object id="bmi" class="GtkLabel">
+						<property name="visible">True</property>
+						<property name="label"></property>
+					</object>
+					<packing>
+						<property name="left-attach">2</property>
+						<property name="top-attach">6</property>
+					</packing>
+				</child>
+
+				<child>
+					<object id="reset" class="GtkButton">
+						<property name="visible">True</property>
+						<property name="label">Zurücksetzen</property>
+					</object>
+					<packing>
+						<property name="left-attach">2</property>
+						<property name="top-attach">7</property>
+					</packing>
+				</child>
+			</object>
+			<packing>
+			</packing>
+		</child>
+	</object>
+</interface>
