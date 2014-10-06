@@ -1,6 +1,9 @@
 # As LDAhid is missing in git and not under open source
 # license you will need to download it from LabView website
 
+# TODO: add dependecies checks for libus, gtk and the other
+# 	stuff needed for this Program to run
+
 CC=gcc
 CFLAGS=-lm -lpthread -lusb
 
