@@ -125,8 +125,8 @@ get_parameters(int argc, char *argv[])
 
 		if (strncmp(argv[i], "-t", strlen(argv[i])) == 0)
 			if ((i + 1) > argc) {
-				ud.atime = 60;
-				printf("Time set to: %d\n", ud.atime);
+				if (ud.time != 0)
+					printf("Time set to: %d\n", ud.atime);
 				break;
 			}
 			ud.atime = atoi(argv[i + 1]);
