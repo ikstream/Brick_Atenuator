@@ -137,7 +137,7 @@ get_parameters(int argc, char *argv[])
 			ud.ramp_steps = (int)(atof(argv[i + 1]) * 4);
 			if ((i + 1) > argc) {
 				printf("Stepsize set to %ddB\n", ud.ramp_steps);
-				continue;
+				break;
 			}
 			ud.ramp_steps = atoi(argv[i + 1]);
 
