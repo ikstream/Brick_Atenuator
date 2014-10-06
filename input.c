@@ -134,13 +134,7 @@ get_parameters(int argc, char *argv[])
 		if (strncmp(argv[i], "-step", strlen(argv[i])) == 0)
 			if ((i + 1) > argc) {
 				printf("Stepsize set to %.1fdB\n",
-					(double)ud.ramp_steps);
-				break;
-			}
-			ud.ramp_steps = (int)(atof(argv[i + 1]) * 4);
-			if ((i + 1) > argc) {
-				printf("Stepsize set to %.1fdB\n",
-					(double)ud.ramp_steps / 4);
+					((double)ud.ramp_steps) / 4);
 				break;
 			}
 			ud.ramp_steps = (int)(atof(argv[i + 1]) * 4);
@@ -157,7 +151,7 @@ get_parameters(int argc, char *argv[])
 				//TODO: check if min_att can be set here
 				//through get_min_att
 				printf("Start attenuation set to %.1fdB\n",
-					(double)ud.start_att / 4);
+					((double)ud.start_att) / 4);
 				break;
 			}
 			ud.start_att = (int)(atof(argv[i + 1]) * 4);
