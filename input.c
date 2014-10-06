@@ -184,21 +184,21 @@ get_parameters(int argc, char *argv[])
 		if (strncmp(argv[i], "-t", strlen(argv[i])) == 0)
 			if ((i + 1) > argc) {
 				printf("Time set to: %d\n", ud.atime);
-				continue;
+				break;
 			}
 			ud.atime = atoi(argv[i + 1]);
 
 		if (strncmp(argv[i], "-step", strlen(argv[i])) == 0)
 			if ((i + 1) > argc) {
 				printf("Stepsize set to %ddB\n", ud.ramp_steps);
-				continue;
+				break;
 			}
 			ud.ramp_steps = atoi(argv[i + 1]);
 
 		if (strncmp(argv[i], "-step_time", strlen(argv[i])) == 0)
 			if ((i + 1) > argc){
 				printf("Steptime set to %d\n", ud.step_time);
-				continue;
+				break;
 			}
 			ud.step_time = atoi(argv[i + 1]);
 
@@ -207,18 +207,24 @@ get_parameters(int argc, char *argv[])
 				//TODO: check if min_att can be set here
 				//through get_min_att
 				printf("Start attenuation set to %ddB\n", ud.start_att);
-				continue;
+				break;
 			}
 			ud.start_att = atoi(argv[i + 1]);
 
 		if (strncmp(argv[i], "-end", strlen(argv[i])) == 0)
 			if ((i + 1) > argc){
 				printf("Set end attenuation to %d\n", ud.end_att);
-				continue;
+				break;
 			}
 			ud.end_att = atoi(argv[i + 1]);
 
 		if (strncmp(argv[i],"-f", strlen(argv[i])) == 0) {
+			if ((i + 1) > argc) {
+				printf("You probably wanted to use a file,");
+				printf("but its seems like you forgot to ");
+				printf("enter the path to the file\n");
+				break;
+			}
 			ud.path = argv[i + 1];
 			ud.file = 1;
 			//read_file(ud.path, 1);
