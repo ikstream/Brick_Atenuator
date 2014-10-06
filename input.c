@@ -75,6 +75,7 @@ read_file(char *path, int id)
 		ud.attenuation = (int)atof(get_entry(tmp, ATT));
 		set_attenuation(id);
 		tmp = strdup(line);
+
 		if ((void*)atoi(get_entry(tmp, 3)) != NULL) {
 			printf("There are more the two entries in the line: ");
 			printf("%s\n", line);
@@ -134,6 +135,11 @@ get_parameters(int argc, char *argv[])
 				break;
 			}
 			ud.ramp_steps = (int)(atof(argv[i + 1]) * 4);
+			if ((i + 1) > argc) {
+				printf("Stepsize set to %ddB\n", ud.ramp_steps);
+				continue;
+			}
+			ud.ramp_steps = atoi(argv[i + 1]);
 
 		if (strncmp(argv[i], "-step_time", strlen(argv[i])) == 0)
 			if ((i + 1) > argc){
@@ -150,7 +156,7 @@ get_parameters(int argc, char *argv[])
 					(double)ud.start_att / 4);
 				break;
 			}
-			ud.start_att = (int)atof(argv[i + 1]);
+			ud.start_att = (int)(atof(argv[i + 1]) * 4);
 
 		if (strncmp(argv[i], "-end", strlen(argv[i])) == 0)
 			if ((i + 1) > argc){
@@ -158,7 +164,7 @@ get_parameters(int argc, char *argv[])
 					(double)ud.end_att / 4);
 				break;
 			}
-			ud.end_att = (int)atof(argv[i + 1]);
+			ud.end_att = (int)(atof(argv[i + 1]) * 4);
 
 		if (strncmp(argv[i],"-f", strlen(argv[i])) == 0) {
 			if ((i + 1) > argc) {
