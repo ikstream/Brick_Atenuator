@@ -33,7 +33,7 @@ get_entry(char* line, int entry)
 }
 
 /*
- * follows the path to a given .csv file
+ * follows the path to a given config/.csv file
  * and checks it for correct entries.
  * time is expected to be in the first entry followed by the
  * attenuation. 
@@ -41,9 +41,8 @@ get_entry(char* line, int entry)
 int
 read_file(char *path, int id)
 {
-	//TODO: check if more then two entries in file
-
 	//TODO: check if file in path is a .csv file
+
 	int i = 0;
 	int isDigit = 0;
 	FILE *fp;
@@ -57,7 +56,6 @@ read_file(char *path, int id)
 		return -1;
 	}
 	fp = fopen(path, "r");
-//	fgets(line, LINE_LENGTH, fp);
 
 	while (fgets(line, LINE_LENGTH, fp)) {
 		tmp = strdup(line);
@@ -67,6 +65,13 @@ read_file(char *path, int id)
 		ud.attenuation = atoi(get_entry(tmp, ATT));
 		printf("ud.attenuation: %d\n", ud.attenuation);
 		set_attenuation(id);
+		tmp = strdup(line);
+		if (atoi(get_entry(tmp, 3)) != NULL) {
+			printf("There are more the two entries in the line: ");
+			printf("%s\n", line);
+			printf("but only two entries are permitted\n");
+			printf("this values will be ignored\n");
+		}
 		free(tmp);
 	}
 
@@ -155,9 +160,11 @@ get_parameters(int argc, char *argv[])
 	//TODO: check for order of arguments
 
 	//TODO: fix Problem if argv[i + 1] does not exist
+	//TODO: check if argv[i + 1] is what is expected
 	if (argc == 2){
 		printf("you are missing parameters for %s\n", argv[1]);
 		printf("\r\nusage:\n");
+		call_help();
 		return 0;
 	}
 
@@ -171,22 +178,44 @@ get_parameters(int argc, char *argv[])
 				ud.attenuation = atoi(argv[i + 1]);
 			}
 			else
-				printf("you set the -a switch, but missed to erter an attenuation\n");
+				printf("you set the -a switch, but missed to enter an attenuation\n");
 		}
 
 		if (strncmp(argv[i], "-t", strlen(argv[i])) == 0)
+			if ((i + 1) > argc) {
+				printf("Time set to: %d\n", ud.atime);
+				continue;
+			}
 			ud.atime = atoi(argv[i + 1]);
 
 		if (strncmp(argv[i], "-step", strlen(argv[i])) == 0)
+			if ((i + 1) > argc) {
+				printf("Stepsize set to %ddB\n", ud.ramp_steps);
+				continue;
+			}
 			ud.ramp_steps = atoi(argv[i + 1]);
 
 		if (strncmp(argv[i], "-step_time", strlen(argv[i])) == 0)
+			if ((i + 1) > argc){
+				printf("Steptime set to %d\n", ud.step_time);
+				continue;
+			}
 			ud.step_time = atoi(argv[i + 1]);
 
 		if (strncmp(argv[i], "-start", strlen(argv[i])) == 0)
+			if ((i + 1) > argc){
+				//TODO: check if min_att can be set here
+				//through get_min_att
+				printf("Start attenuation set to %ddB\n", ud.start_att);
+				continue;
+			}
 			ud.start_att = atoi(argv[i + 1]);
 
 		if (strncmp(argv[i], "-end", strlen(argv[i])) == 0)
+			if ((i + 1) > argc){
+				printf("Set end attenuation to %d\n", ud.end_att);
+				continue;
+			}
 			ud.end_att = atoi(argv[i + 1]);
 
 		if (strncmp(argv[i],"-f", strlen(argv[i])) == 0) {
@@ -250,7 +279,7 @@ clear_userdata(void)
 	ud.ramp = 0;
 	ud.sine = 0;
 	ud.triangle = 0;
-	ud.ramp_steps = 1;
+	ud.ramp_steps = 4;
 	ud.cont = 0;
 	ud.step_time = SLEEP_TIME;
 	ud.simple = 0;

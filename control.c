@@ -147,7 +147,7 @@ call_help(void)
   	printf("\t-r\n");
   	printf("\r\n");
 
-	return;
+	exit(0);
 }
 
 /*
