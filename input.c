@@ -22,7 +22,6 @@ struct user_data ud;
 int
 check_if_number(char* str)
 {
-	
 	for (str; str < (char*)strlen(str); str++) {
 
 	}
@@ -75,7 +74,6 @@ read_file(char *path, int id)
 		ud.attenuation = (int)atof(get_entry(tmp, ATT));
 		set_attenuation(id);
 		tmp = strdup(line);
-
 		if ((void*)atoi(get_entry(tmp, 3)) != NULL) {
 			printf("There are more the two entries in the line: ");
 			printf("%s\n", line);
