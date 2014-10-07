@@ -16,6 +16,16 @@
 #define ATT 2
 
 struct user_data ud;
+/*
+ * checks if a given string is a number
+ */
+int
+check_if_number(char* str)
+{
+	for (str; str < (char*)strlen(str); str++) {
+
+	}
+}
 
 /*
  * returns token on given place in .csv file
@@ -66,7 +76,7 @@ read_file(char *path, int id)
 		printf("ud.attenuation: %d\n", ud.attenuation);
 		set_attenuation(id);
 		tmp = strdup(line);
-		if (atoi(get_entry(tmp, 3)) != NULL) {
+		if ((void*)atoi(get_entry(tmp, 3)) != NULL) {
 			printf("There are more the two entries in the line: ");
 			printf("%s\n", line);
 			printf("but only two entries are permitted\n");
