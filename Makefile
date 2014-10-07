@@ -33,5 +33,3 @@ clean:
 	rm -rf control.o
 	rm -rf input.o
 	rm -rf ldahid.o
-	rm -rf attenuator_lab_brick
-	rm -rf LDAhid.o
