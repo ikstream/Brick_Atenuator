@@ -22,6 +22,7 @@ struct user_data ud;
 int
 check_if_number(char* str)
 {
+	
 	for (str; str < (char*)strlen(str); str++) {
 
 	}
