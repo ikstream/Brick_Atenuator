@@ -506,8 +506,10 @@ main(int argc, char *argv[])
 		else if (ud.simple == 1)
 			set_attenuation(id);
 		else if (ud.file && ud.cont) {
+#ifdef DEBUG
 			printf("ud.file: %d\n", ud.file);
 			printf("ud.cont: %d\n", ud.cont);
+#endif
 			for(;;)
 				read_file(ud.path, id);
 		}

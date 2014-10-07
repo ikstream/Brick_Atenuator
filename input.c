@@ -22,6 +22,7 @@ struct user_data ud;
 int
 check_if_number(char* str)
 {
+	
 	for (str; str < (char*)strlen(str); str++) {
 
 	}
@@ -193,6 +194,7 @@ get_parameters(int argc, char *argv[])
 
 		if (strncmp(argv[i], "-t", strlen(argv[i])) == 0)
 			if ((i + 1) > argc) {
+				ud.atime = 60;
 				printf("Time set to: %d\n", ud.atime);
 				break;
 			}
@@ -288,7 +290,7 @@ print_userdata(void)
 void
 clear_userdata(void)
 {
-	ud.atime = 60;
+	ud.atime = 0;
 	ud.attenuation = 0;
 	ud.start_att = 0;
 	ud.end_att = 0;
