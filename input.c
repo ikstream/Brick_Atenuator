@@ -128,15 +128,12 @@ get_parameters(int argc, char *argv[])
 			ud.atime = atoi(argv[i + 1]);
 
 		if (strncmp(argv[i], "-step", strlen(argv[i])) == 0)
-<<<<<<< HEAD
 			if ((i + 1) > argc) {
-				printf("Stepsize set to %ddB\n", ud.ramp_steps);
+				printf("Stepsize set to %.1fdB\n",
+					(double)ud.ramp_steps);
 				break;
 			}
-			ud.ramp_steps = atoi(argv[i + 1]);
-=======
 			ud.ramp_steps = (int)(atof(argv[i + 1]) * 4);
->>>>>>> fixed output and input issues.
 
 		if (strncmp(argv[i], "-step_time", strlen(argv[i])) == 0)
 			if ((i + 1) > argc){
@@ -146,27 +143,22 @@ get_parameters(int argc, char *argv[])
 			ud.step_time = atoi(argv[i + 1]);
 
 		if (strncmp(argv[i], "-start", strlen(argv[i])) == 0)
-<<<<<<< HEAD
 			if ((i + 1) > argc){
 				//TODO: check if min_att can be set here
 				//through get_min_att
-				printf("Start attenuation set to %ddB\n", ud.start_att);
+				printf("Start attenuation set to %.1fdB\n",
+					(double)ud.start_att / 4);
 				break;
 			}
-			ud.start_att = atoi(argv[i + 1]);
+			ud.start_att = (int)atof(argv[i + 1]);
 
 		if (strncmp(argv[i], "-end", strlen(argv[i])) == 0)
 			if ((i + 1) > argc){
-				printf("Set end attenuation to %d\n", ud.end_att);
+				printf("Set end attenuation to %.1fdB\n",
+					(double)ud.end_att / 4);
 				break;
 			}
-			ud.end_att = atoi(argv[i + 1]);
-=======
-			ud.start_att = (int)(atof(argv[i + 1]) * 4);
-
-		if (strncmp(argv[i], "-end", strlen(argv[i])) == 0)
-			ud.end_att = (int)(atof(argv[i + 1]) * 4);
->>>>>>> fixed output and input issues.
+			ud.end_att = (int)atof(argv[i + 1]);
 
 		if (strncmp(argv[i],"-f", strlen(argv[i])) == 0) {
 			if ((i + 1) > argc) {
@@ -201,21 +193,21 @@ void
 print_userdata(void)
 {
 	if (ud.simple == 1) {
-		printf("attenuation set to %d dB\n", ud.attenuation / 4);
+		printf("attenuation set to %.1fdB\n", (double)ud.attenuation / 4);
 		printf("time for attenuation set to %d seconds.\n", ud.atime);
 	}
 	if (ud.ramp == 1) {
 		printf("attenuation set to ramp\n");
-		printf("ramp steps set to %d dB\n", ud.ramp_steps / 4);
-		printf("start attenuation set to %d dB\n", ud.start_att / 4);
-		printf("end attenuation set to %d dB\n", ud.end_att / 4);
+		printf("ramp steps set to %.1fdB\n", (double)ud.ramp_steps / 4);
+		printf("start attenuation set to %.1fdB\n", (double)ud.start_att / 4);
+		printf("end attenuation set to %.1fdB\n", (double)ud.end_att / 4);
 		printf("time per step set to %d mikroseconds\n", ud.step_time);
 	}
 	if (ud.triangle == 1) {
 		printf("attenuation form set to both sided ramp\n");
-		printf("ramp steps set to %d dB\n", ud.ramp_steps / 4);
-		printf("start attenuation set to %d dB\n", ud.start_att / 4);
-		printf("maximal attenuation set to %d dB\n", ud.end_att / 4);
+		printf("ramp steps set to %.1fdB\n", (double)ud.ramp_steps / 4);
+		printf("start attenuation set to %.1fdB\n", (double)ud.start_att / 4);
+		printf("maximal attenuation set to %.1fdB\n", (double)ud.end_att / 4);
 		printf("time per step set to %d mikroseconds\n", ud.step_time);
 	}
 	if (ud.cont == 1)
