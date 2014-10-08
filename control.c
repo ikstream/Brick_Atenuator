@@ -266,8 +266,8 @@ set_attenuation(unsigned int id)
 		sleep(MIKRO_SEC(ud.atime));
 		return 1;
 	}
-	fnLDA_SetAttenuation(id, (ud.attenuation * 4));
-	printf("set device to %ddB attenuation\n", fnLDA_GetAttenuation(id));
+	fnLDA_SetAttenuation(id, (ud.attenuation));
+	printf("set device to %ddB attenuation\n", (fnLDA_GetAttenuation(id)/4));
 	sleep(MIKRO_SEC(ud.atime));
 	return 1;
 }
@@ -481,15 +481,11 @@ main(int argc, char *argv[])
 	/*
 	 * Set device as specified by user
 	 */
-<<<<<<< HEAD
 #ifdef DEBUG
 	printf("starting functions\n");
 	printf("ud.file: %d\n", ud.file);
 	printf("ud.cont: %d\n", ud.cont);
 #endif
-=======
-
->>>>>>> Did some cleanup for productive usage
 	for (id = 1; id <= nr_active_devices; id++) {
 		if (ud.sine == 1) {
 			/* TODO call sine_function which will set ramp form
