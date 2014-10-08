@@ -136,10 +136,11 @@ get_parameters(int argc, char *argv[])
 			}
 			ud.ramp_steps = (int)(atof(argv[i + 1]) * 4);
 			if ((i + 1) > argc) {
-				printf("Stepsize set to %ddB\n", ud.ramp_steps);
+				printf("Stepsize set to %.1fdB\n",
+					(double)ud.ramp_steps / 4);
 				break;
 			}
-			ud.ramp_steps = atoi(argv[i + 1]);
+			ud.ramp_steps = (int)(atof(argv[i + 1]) * 4);
 
 		if (strncmp(argv[i], "-step_time", strlen(argv[i])) == 0)
 			if ((i + 1) > argc){
