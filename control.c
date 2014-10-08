@@ -258,8 +258,8 @@ set_attenuation(unsigned int id)
 		sleep(MIKRO_SEC(ud.atime));
 		return 1;
 	}
-	fnLDA_SetAttenuation(id, (ud.attenuation * 4));
-	printf("set device to %ddB attenuation\n", fnLDA_GetAttenuation(id));
+	fnLDA_SetAttenuation(id, (ud.attenuation));
+	printf("set device to %ddB attenuation\n", (fnLDA_GetAttenuation(id)/4));
 	sleep(MIKRO_SEC(ud.atime));
 	return 1;
 }
