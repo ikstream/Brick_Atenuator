@@ -151,10 +151,10 @@ get_parameters(int argc, char *argv[])
 				//TODO: check if min_att can be set here
 				//through get_min_att
 				printf("Start attenuation set to %.1fdB\n",
-					((double)ud.start_att) / 4);
+					(double)ud.start_att / 4);
 				break;
 			}
-			ud.start_att = (int)(atof(argv[i + 1]) * 4);
+			ud.start_att = (int)atof(argv[i + 1]);
 
 		if (strncmp(argv[i], "-end", strlen(argv[i])) == 0)
 			if ((i + 1) > argc){
@@ -162,7 +162,7 @@ get_parameters(int argc, char *argv[])
 					(double)ud.end_att / 4);
 				break;
 			}
-			ud.end_att = (int)(atof(argv[i + 1]) * 4);
+			ud.end_att = (int)atof(argv[i + 1]);
 
 		if (strncmp(argv[i],"-f", strlen(argv[i])) == 0) {
 			if ((i + 1) > argc) {
