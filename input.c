@@ -104,10 +104,11 @@ get_parameters(int argc, char *argv[])
 	//TODO: fix Problem if argv[i + 1] does not exist
 	//TODO: check if argv[i + 1] is what is expected
 	if (argc == 2){
-		printf("you are missing parameters for %s\n", argv[1]);
-		printf("\r\nusage:\n");
-		call_help();
-		return 0;
+		if (strncmp(argv[1], "-i", strlen(argv[1])) != 0) {
+			printf("you are missing parameters for %s\n", argv[1]);
+			printf("\r\nusage:\n");
+			return 0;
+		}
 	}
 
 	for (i = 1; i < argc - 1; i++) {
@@ -118,6 +119,9 @@ get_parameters(int argc, char *argv[])
 			else
 				printf("you set the -a switch, but missed to enter an attenuation\n");
 		}
+
+		if (strncmp(argv[i], "-i", strlen(argv[i])) == 0)
+			ud.info = 1;
 
 		if (strncmp(argv[i], "-t", strlen(argv[i])) == 0)
 			if ((i + 1) > argc) {
@@ -191,6 +195,10 @@ get_parameters(int argc, char *argv[])
 			    strlen(argv[i + 1])) == 0)
 				ud.triangle = 1;
 		}
+		
+		if (strncmp(argv[i], "-r", strlen(argv[i])) == 0) {
+			ud.cont = 1;
+		}
 	}
 	return 1;
 }
@@ -201,7 +209,7 @@ print_userdata(void)
 	if (ud.simple == 1) {
 		printf("attenuation set to %.1fdB\n", (double)ud.attenuation / 4);
 		if (ud.atime != 0)
-			printf("time for attenuation set to %d seconds.\n", ud.atime);
+			printf("time for attenuation set to %d mikroseconds.\n", ud.atime);
 	}
 	if (ud.ramp == 1) {
 		printf("attenuation set to ramp\n");
@@ -238,5 +246,6 @@ clear_userdata(void)
 	ud.step_time = SLEEP_TIME;
 	ud.simple = 0;
 	ud.file = 0;
+	ud.info = 0;
 	ud.path = "";
 }

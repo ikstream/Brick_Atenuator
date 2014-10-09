@@ -13,5 +13,6 @@ char * get_device_data(unsigned int *working_devices, int nr_active_devices);
 int set_ramp(int id);
 int set_attenuation(unsigned int id);
 int set_triangle(unsigned int id);
+int print_dev_info(int id);
 
 #endif
