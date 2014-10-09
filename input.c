@@ -173,7 +173,7 @@ print_userdata(void)
 void
 clear_userdata(void)
 {
-	ud.atime = 60;
+	ud.atime = 0;
 	ud.attenuation = 0;
 	ud.start_att = 0;
 	ud.end_att = 0;
