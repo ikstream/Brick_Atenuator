@@ -73,7 +73,6 @@ read_file(char *path, int id)
 		ud.atime = atoi(get_entry(tmp, TIME));
 		tmp = strdup(line);
 		ud.attenuation = (int)atof(get_entry(tmp, ATT));
-
 		set_attenuation(id);
 		tmp = strdup(line);
 		if ((void*)atoi(get_entry(tmp, 3)) != NULL) {
