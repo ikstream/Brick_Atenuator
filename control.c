@@ -11,7 +11,7 @@
 #define FALSE 0
 #define TRUE !FALSE
 #define STRING_LENGTH 12
-#define SLEEP_TIME 100000
+#define SLEEP_TIME 1000000
 #define LINE_LENGTH 256
 #define TIME 1
 #define ATT 2
@@ -150,10 +150,6 @@ call_help(void)
 	printf("repeat form, or file input for several times\n");
 	printf("\t-rr <#runs>\n");
 	printf("\r\n");
-
-	printf("to get basic device information esp. current attenuation\n");
-	printf("\t-i\n");
-	printf("\r\n");
 	
 	return;
 }
@@ -203,8 +199,13 @@ set_ramp(int id)
 		for(;;) {
 			fnLDA_SetAttenuation(id, ud.start_att);
 			for(i = 0; i <= (ud.end_att - ud.start_att); i++) {
-				sleep(MIKRO_SEC(ud.step_time));
-				cur_att = fnLDA_GetAttenuation(1);
+				if (ud.us == 1)
+					sleep(MIKRO_SEC(ud.atime));
+				else if(ud.ms == 1)
+					sleep(MILLI_SEC(ud.atime));
+				else
+					sleep(ud.atime);
+				cur_att = fnLDA_GetAttenuation(id);
 				//printf("cur_att %d\n", cur_att);
 				fnLDA_SetAttenuation(id,
 					cur_att + ud.ramp_steps);
@@ -215,8 +216,13 @@ set_ramp(int id)
 		for(;;) {
 			fnLDA_SetAttenuation(id, ud.start_att);
 			for(i = 0; i <= (ud.start_att - ud.end_att); i++) {
-				sleep(MIKRO_SEC(ud.step_time));
-				cur_att = fnLDA_GetAttenuation(1);
+				if (ud.us == 1)
+					sleep(MIKRO_SEC(ud.atime));
+				else if(ud.ms == 1)
+					sleep(MILLI_SEC(ud.atime));
+				else
+					sleep(ud.atime);
+				cur_att = fnLDA_GetAttenuation(id);
 				//printf("cur_att %d\n", cur_att);
 				fnLDA_SetAttenuation(id,
 					cur_att - ud.ramp_steps);
@@ -226,8 +232,13 @@ set_ramp(int id)
 	else if (ud.start_att < ud.end_att) {
 		fnLDA_SetAttenuation(id, ud.start_att);
 		for(i = 0; i <= (ud.end_att - ud.start_att); i++) {
-			sleep(MIKRO_SEC(ud.step_time));
-			cur_att = fnLDA_GetAttenuation(1);
+			if (ud.us == 1)
+				sleep(MIKRO_SEC(ud.atime));
+			else if(ud.ms == 1)
+				sleep(MILLI_SEC(ud.atime));
+			else
+				sleep(ud.atime);
+			cur_att = fnLDA_GetAttenuation(id);
 			//printf("cur_att %d\n", cur_att);
 			fnLDA_SetAttenuation(id,
 				cur_att + ud.ramp_steps);
@@ -236,8 +247,13 @@ set_ramp(int id)
 	else if (ud.start_att > ud.end_att) {
 		fnLDA_SetAttenuation(id, ud.start_att);
 		for(i = 0; i <= (ud.start_att - ud.end_att); i++) {
-			sleep(MIKRO_SEC(ud.step_time));
-			cur_att = fnLDA_GetAttenuation(1);
+			if (ud.us == 1)
+				sleep(MIKRO_SEC(ud.atime));
+			else if(ud.ms == 1)
+				sleep(MILLI_SEC(ud.atime));
+			else
+				sleep(ud.atime);
+			cur_att = fnLDA_GetAttenuation(id);
 			//printf("cur_att %d\n", cur_att);
 			fnLDA_SetAttenuation(id,
 				cur_att - ud.ramp_steps);
@@ -263,9 +279,15 @@ set_attenuation(unsigned int id)
 		printf("attenuation has been set to %.1fdB\n",
 			(double)fnLDA_GetMinAttenuation(id) / 4);
 		fnLDA_SetAttenuation(id, fnLDA_GetMinAttenuation(id));
-		sleep(MIKRO_SEC(ud.atime));
+		if (ud.us == 1)
+			sleep(MIKRO_SEC(ud.atime));
+		else if(ud.ms == 1)
+			sleep(MILLI_SEC(ud.atime));
+		else
+			sleep(ud.atime);
 		return 1;
 	}
+	
 	if (ud.attenuation > fnLDA_GetMaxAttenuation(id)) {
 		printf("%d is above maximal attenuation of %d\n",
 			(double)ud.attenuation / 4,
@@ -273,13 +295,24 @@ set_attenuation(unsigned int id)
 		printf("attenuation has been set to %d\n",
 			(double)fnLDA_GetMaxAttenuation(id) / 4);
 		fnLDA_SetAttenuation(id, fnLDA_GetMaxAttenuation(id));
-		sleep(MIKRO_SEC(ud.atime));
+		if (ud.us == 1)
+			sleep(MIKRO_SEC(ud.atime));
+		else if(ud.ms == 1)
+			sleep(MILLI_SEC(ud.atime));
+		else
+			sleep(ud.atime);
 		return 1;
 	}
+	
 	fnLDA_SetAttenuation(id, (ud.attenuation));
 	printf("set device to %.1fdB attenuation\n",
 		(double)(fnLDA_GetAttenuation(id)/4));
-	sleep(MIKRO_SEC(ud.atime));
+	if (ud.us == 1)
+		sleep(MIKRO_SEC(ud.atime));
+	else if(ud.ms == 1)
+		sleep(MILLI_SEC(ud.atime));
+	else
+		sleep(ud.atime);
 	return 1;
 }
 
@@ -321,14 +354,24 @@ set_triangle(unsigned int id)
 	if (ud.cont && (ud.start_att < ud.end_att)) {
 		for(;;) {
 			for (i = 1; i <= (ud.end_att - ud.start_att); i++) {
-				sleep(MIKRO_SEC(ud.step_time));
+				if (ud.us == 1)
+					sleep(MIKRO_SEC(ud.atime));
+				else if(ud.ms == 1)
+					sleep(MILLI_SEC(ud.atime));
+				else
+					sleep(ud.atime);
 				cur_att = fnLDA_GetAttenuation(id);
 				printf("cur_att %d\n", cur_att);
 				fnLDA_SetAttenuation(id,
 					cur_att + ud.ramp_steps);
 			}
 			for (i = ud.end_att; i > (ud.end_att - ud.start_att); i--) {
-				sleep(MIKRO_SEC(ud.step_time));
+				if (ud.us == 1)
+					sleep(MIKRO_SEC(ud.atime));
+				else if(ud.ms == 1)
+					sleep(MILLI_SEC(ud.atime));
+				else
+					sleep(ud.atime);
 				cur_att = fnLDA_GetAttenuation(id);
 				printf("cur_att %d\n", cur_att);
 				fnLDA_SetAttenuation(id,
@@ -339,13 +382,23 @@ set_triangle(unsigned int id)
 	}
 	if (ud.start_att < ud.end_att) {
 		for (i = 1; i <= (ud.end_att - ud.start_att); i++) {
-			sleep(MIKRO_SEC(ud.step_time));
+			if (ud.us == 1)
+				sleep(MIKRO_SEC(ud.atime));
+			else if(ud.ms == 1)
+				sleep(MILLI_SEC(ud.atime));
+			else
+				sleep(ud.atime);
 			cur_att = fnLDA_GetAttenuation(id);
 			printf("cur_att %d\n", cur_att);
 			fnLDA_SetAttenuation(id, cur_att + ud.ramp_steps);
 		}
 		for (i = ud.end_att; i > (ud.end_att - ud.start_att); i--) {
-			sleep(MIKRO_SEC(ud.step_time));
+			if (ud.us == 1)
+				sleep(MIKRO_SEC(ud.atime));
+			else if(ud.ms == 1)
+				sleep(MILLI_SEC(ud.atime));
+			else
+				sleep(ud.atime);
 			cur_att = fnLDA_GetAttenuation(id);
 			printf("cur_att %d\n", cur_att);
 			fnLDA_SetAttenuation(id, cur_att - ud.ramp_steps);
@@ -355,14 +408,24 @@ set_triangle(unsigned int id)
 	if (ud.cont && (ud.start_att > ud.end_att)) {
 		for(;;) {
 			for (i = 0; i < (ud.start_att - ud.end_att); i++) {
-				sleep(MIKRO_SEC(ud.step_time));
+				if (ud.us == 1)
+					sleep(MIKRO_SEC(ud.atime));
+				else if(ud.ms == 1)
+					sleep(MILLI_SEC(ud.atime));
+				else
+					sleep(ud.atime);
 				cur_att = fnLDA_GetAttenuation(id);
 				printf("cur_att %d\n", cur_att);
 				fnLDA_SetAttenuation(id,
 					cur_att - ud.ramp_steps);
 			}
 			for (i = 1; i <= (ud.start_att - ud.end_att); i++) {
-				sleep(MIKRO_SEC(ud.step_time));
+				if (ud.us == 1)
+					sleep(MIKRO_SEC(ud.atime));
+				else if(ud.ms == 1)
+					sleep(MILLI_SEC(ud.atime));
+				else
+					sleep(ud.atime);
 				cur_att = fnLDA_GetAttenuation(id);
 				printf("cur_att %d\n", cur_att);
 				fnLDA_SetAttenuation(id,
@@ -373,13 +436,23 @@ set_triangle(unsigned int id)
 	}
 	if (ud.start_att > ud.end_att) {
 		for (i = 0; i < (ud.start_att - ud.end_att); i++) {
-			sleep(MIKRO_SEC(ud.step_time));
+			if (ud.us == 1)
+				sleep(MIKRO_SEC(ud.atime));
+			else if(ud.ms == 1)
+				sleep(MILLI_SEC(ud.atime));
+			else
+				sleep(ud.atime);
 			cur_att = fnLDA_GetAttenuation(id);
 			printf("cur_att %d\n", cur_att);
 			fnLDA_SetAttenuation(id, cur_att - ud.ramp_steps);
 		}
 		for (i = 1; i <= (ud.start_att - ud.end_att); i++) {
-			sleep(MIKRO_SEC(ud.step_time));
+			if (ud.us == 1)
+				sleep(MIKRO_SEC(ud.atime));
+			else if(ud.ms == 1)
+				sleep(MILLI_SEC(ud.atime));
+			else
+				sleep(ud.atime);
 			cur_att = fnLDA_GetAttenuation(id);
 			printf("cur_att %d\n", cur_att);
 			fnLDA_SetAttenuation(id, cur_att + ud.ramp_steps);
@@ -464,8 +537,8 @@ main(int argc, char *argv[])
 		}
 		printf("initialized device %d successfully\n", id + 1);
 		if (ud.info != 1)
-			printf("You can set attenuation steps in %ddB steps\n",
-				(fnLDA_GetDevResolution(id) / 4));
+			printf("You can set attenuation steps in %.1fdB steps\n",
+				(double)(fnLDA_GetDevResolution(id)));
 		else
 			print_dev_info(id);
 	}
@@ -483,16 +556,18 @@ main(int argc, char *argv[])
 		  * in intervall maybe with steps and set one step a
 		  * second so it will be decided by step size and
 		  * timehow many curve intervalls there will be */
-		else if (ud.simple == 1)
+		if (ud.simple == 1)
 			set_attenuation(id);
 		
 		else if (ud.sine && ud.cont) {
 			for(;;)
-				set_sine(id);
+				printf("blub\n");
+				//set_sine(id);
 		}
-		else if (ud.file && ud.runs >= 1)
+		else if (ud.sine && (ud.runs >= 1))
 			for(i = 0; i < ud.runs; i++)
-				set_sine(id);
+				//set_sine(id);
+				printf("blub\n");
 
 		else if (ud.triangle && ud.cont) {
 			for(;;)
@@ -502,7 +577,7 @@ main(int argc, char *argv[])
 			for(i = 0; i < ud.runs; i++)
 				set_triangle(id);
 
-		else if (ramp && ud.cont) {
+		else if (ud.ramp && ud.cont) {
 			for(;;)
 				set_ramp(id);
 		}

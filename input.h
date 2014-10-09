@@ -1,7 +1,8 @@
 #ifndef _INPUT_H_
 #define _INPUT_H_
 
-#define MIKRO_SEC(step_time) ((1 * step_time) / 100000)
+#define MIKRO_SEC(step_time) ((1 * step_time) / 1000000)
+#define MILLI_SEC(step_time) ((1 * step_time) / 1000)
 
 struct user_data
 {
@@ -19,6 +20,8 @@ struct user_data
 	unsigned int file;
 	unsigned int info;
 	unsigned int runs;
+	unsigned int ms;
+	unsigned int us;
 	char *path;
 };
 
