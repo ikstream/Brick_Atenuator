@@ -479,18 +479,37 @@ main(int argc, char *argv[])
 	 */
 
 	for (id = 1; id <= nr_active_devices; id++) {
-		if (ud.sine == 1) {
-			/* TODO call sine_function which will set ramp form
-		 	 * in intervall maybe with steps and set one step a
-		 	 * second so it will be decided by step size and
-		 	 * timehow many curve intervalls there will be */
-		}
-		else if (ud.triangle == 1)
-			set_triangle(id);
-		else if (ud.ramp == 1)
-			set_ramp(id);
+		/* TODO implement sine_function which will set ramp form
+		  * in intervall maybe with steps and set one step a
+		  * second so it will be decided by step size and
+		  * timehow many curve intervalls there will be */
 		else if (ud.simple == 1)
 			set_attenuation(id);
+		
+		else if (ud.sine && ud.cont) {
+			for(;;)
+				set_sine(id);
+		}
+		else if (ud.file && ud.runs >= 1)
+			for(i = 0; i < ud.runs; i++)
+				set_sine(id);
+
+		else if (ud.triangle && ud.cont) {
+			for(;;)
+				set_triangle(id);
+		}
+		else if (ud.triangle && ud.runs >= 1)
+			for(i = 0; i < ud.runs; i++)
+				set_triangle(id);
+
+		else if (ramp && ud.cont) {
+			for(;;)
+				set_ramp(id);
+		}
+		else if (ud.ramp && ud.runs >= 1)
+			for(i = 0; i < ud.runs; i++)
+				set_ramp(id);
+		
 		else if (ud.file && ud.cont) {
 			for(;;)
 				read_file(ud.path, id);
@@ -498,6 +517,7 @@ main(int argc, char *argv[])
 		else if (ud.file && ud.runs >= 1)
 			for(i = 0; i < ud.runs; i++)
 				read_file(ud.path, id);
+
 		if (ud.atime != 0)
 			fnLDA_SetAttenuation(id, 0);
 	}
