@@ -18,6 +18,7 @@ struct user_data
 	unsigned int simple;
 	unsigned int file;
 	unsigned int info;
+	unsigned int runs;
 	char *path;
 };
 

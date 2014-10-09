@@ -143,10 +143,18 @@ call_help(void)
 	printf("\t-f path/to/file\n");
 	printf("\r\n");
 
-  	printf("repeat form, or file input until canceled by user\n");
-  	printf("\t-r\n");
-  	printf("\r\n");
+	printf("repeat form, or file input until canceled by user\n");
+	printf("\t-r\n");
+	printf("\r\n");
 
+	printf("repeat form, or file input for several times\n");
+	printf("\t-rr <#runs>\n");
+	printf("\r\n");
+
+	printf("to get basic device information esp. current attenuation\n");
+	printf("\t-i\n");
+	printf("\r\n");
+	
 	return;
 }
 
@@ -487,8 +495,9 @@ main(int argc, char *argv[])
 			for(;;)
 				read_file(ud.path, id);
 		}
-		else if (ud.file == 1)
-			read_file(ud.path, id);
+		else if (ud.file && ud.runs >= 1)
+			for(i = 0; i < ud.runs; i++)
+				read_file(ud.path, id);
 		if (ud.atime != 0)
 			fnLDA_SetAttenuation(id, 0);
 	}

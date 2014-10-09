@@ -62,7 +62,7 @@ read_file(char *path, int id)
 		tmp = strdup(line);
 		ud.atime = atoi(get_entry(tmp, TIME));
 		tmp = strdup(line);
-		ud.attenuation = (int)atof(get_entry(tmp, ATT));
+		ud.attenuation = (int)(atof(get_entry(tmp, ATT))* 4);
 		set_attenuation(id);
 		free(tmp);
 	}
@@ -141,6 +141,12 @@ get_parameters(int argc, char *argv[])
 			ud.cont = 1;
 		}
 
+		if (strncmp(argv[i], "-rr", strlen(argv[i])) == 0)
+			if ((i + 1) > argc) {
+				ud.runs = 1;
+				return 1;
+			}
+			ud.runs = atoi(argv[i+1]);
 	}
 	return 1;
 }
@@ -169,6 +175,8 @@ print_userdata(void)
 	}
 	if (ud.cont == 1)
 		printf("continous behavior is set\n");
+		if (ud.runs >= 1)
+			printf("for %d runs\n", ud.runs);
 	if (ud.sine == 1)
 		printf("attenuation set to sine\n");
 }
@@ -189,5 +197,6 @@ clear_userdata(void)
 	ud.simple = 0;
 	ud.file = 0;
 	ud.info = 0;
+	ud.runs = 0;
 	ud.path = "";
 }
