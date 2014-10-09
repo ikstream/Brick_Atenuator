@@ -519,8 +519,8 @@ main(int argc, char *argv[])
 		}
 		else if (ud.file == 1)
 			read_file(ud.path, id);
-
-		fnLDA_SetAttenuation(id, 0);
+		if (ud.atime != 0)
+			fnLDA_SetAttenuation(id, 0);
 	}
 
 	/*
