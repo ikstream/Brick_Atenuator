@@ -200,7 +200,8 @@ print_userdata(void)
 {
 	if (ud.simple == 1) {
 		printf("attenuation set to %.1fdB\n", (double)ud.attenuation / 4);
-		printf("time for attenuation set to %d seconds.\n", ud.atime);
+		if (ud.atime != 0)
+			printf("time for attenuation set to %d seconds.\n", ud.atime);
 	}
 	if (ud.ramp == 1) {
 		printf("attenuation set to ramp\n");
