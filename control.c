@@ -39,7 +39,8 @@ get_serial_and_name(int device_count, unsigned int serial, char *device_name)
 int
 print_dev_info(int id)
 {
-	printf("blub\n");
+	printf("Attenuation is set to: %.1f\n",
+		(double)(fnLDA_GetAttenuation(id) / 4));
 }
 
 char * 
@@ -159,7 +160,7 @@ set_ramp(int id)
 	int i, cur_att;
 
 	if (ud.start_att < fnLDA_GetMinAttenuation(id)) {
-		printf("%.1f is below minumal attenuation of %.1f\n",
+		printf("%.1f is below minimal attenuation of %.1f\n",
 			(double)ud.start_att / 4,
 			(double)fnLDA_GetMinAttenuation(id) / 4);
 		printf("start attenuation has been set to %.1fdB\n",
@@ -454,12 +455,15 @@ main(int argc, char *argv[])
 			continue;
 		}
 		printf("initialized device %d successfully\n", id + 1);
+		if (ud.info != 1)
+			printf("You can set attenuation steps in %ddB steps\n",
+				(fnLDA_GetDevResolution(id) / 4));
+		else
+			print_dev_info(id);
 	}
 
 	messages = get_device_data(working_devices, nr_active_devices);
 	printf("%s\n", messages);
-	printf("You can set attenuation steps in %ddB steps\n",
-		(fnLDA_GetDevResolution(1) / 4));
 	print_userdata();
 	
 	/*
