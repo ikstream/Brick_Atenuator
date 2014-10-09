@@ -159,28 +159,34 @@ set_ramp(int id)
 	int i, cur_att;
 
 	if (ud.start_att < fnLDA_GetMinAttenuation(id)) {
-		printf("%d is below minumal attenuation of %d\n",
-			ud.start_att, fnLDA_GetMinAttenuation(id));
-		printf("start attenuation has been set to 0dB\n");
+		printf("%.1f is below minumal attenuation of %.1f\n",
+			(double)ud.start_att / 4,
+			(double)fnLDA_GetMinAttenuation(id) / 4);
+		printf("start attenuation has been set to %.1fdB\n",
+			(double)fnLDA_GetMinAttenuation(id));
 		ud.start_att = fnLDA_GetMinAttenuation(id);
 	}
 	if (ud.start_att > fnLDA_GetMaxAttenuation(id)) {
-		printf("%d is above maximal attenuation of %d\n",
-			ud.start_att, fnLDA_GetMaxAttenuation(id));
-		printf("start attenuation has been set to %d\n",
-			fnLDA_GetMaxAttenuation(id));
+		printf("%.1f is above maximal attenuation of %.1f\n",
+			(double)ud.start_att / 4, (double)fnLDA_GetMaxAttenuation(id) / 4);
+		printf("start attenuation has been set to %.1f\n",
+			(double)fnLDA_GetMaxAttenuation(id) / 4);
 		ud.start_att = fnLDA_GetMaxAttenuation(id);
 	}
 	if (ud.end_att < fnLDA_GetMinAttenuation(id)) {
-		printf("%d is below minumal attenuation of %d\n",
-			ud.end_att, fnLDA_GetMinAttenuation(id));
-		printf("final attenuation has been set to 0dB\n");
+		printf("%.1f is below minumal attenuation of %.1f\n",
+			(double)ud.end_att / 4,
+			(double)fnLDA_GetMinAttenuation(id) / 4);
+		printf("final attenuation has been set to %.1fdB\n",
+			(double)fnLDA_GetMinAttenuation(id) / 4);
 		ud.end_att = fnLDA_GetMinAttenuation(id);
 	}
 	if (ud.end_att > fnLDA_GetMaxAttenuation(id)) {
-		printf("%d is above maximal attenuation of %d\n",
-			ud.end_att, fnLDA_GetMaxAttenuation(id));
-		printf("final attenuation has been set to %d\n");
+		printf("%.1f is above maximal attenuation of %.1f\n",
+			(double)ud.end_att,
+			(double)fnLDA_GetMaxAttenuation(id));
+		printf("final attenuation has been set to %.1f\n",
+			(double)fnLDA_GetMinAttenuation(id) / 4);
 		ud.end_att = fnLDA_GetMaxAttenuation(id);
 	}
 
@@ -190,7 +196,7 @@ set_ramp(int id)
 			for(i = 0; i <= (ud.end_att - ud.start_att); i++) {
 				sleep(MIKRO_SEC(ud.step_time));
 				cur_att = fnLDA_GetAttenuation(1);
-				printf("cur_att %d\n", cur_att);
+				//printf("cur_att %d\n", cur_att);
 				fnLDA_SetAttenuation(id,
 					cur_att + ud.ramp_steps);
 			}
@@ -202,7 +208,7 @@ set_ramp(int id)
 			for(i = 0; i <= (ud.start_att - ud.end_att); i++) {
 				sleep(MIKRO_SEC(ud.step_time));
 				cur_att = fnLDA_GetAttenuation(1);
-				printf("cur_att %d\n", cur_att);
+				//printf("cur_att %d\n", cur_att);
 				fnLDA_SetAttenuation(id,
 					cur_att - ud.ramp_steps);
 			}
@@ -213,7 +219,7 @@ set_ramp(int id)
 		for(i = 0; i <= (ud.end_att - ud.start_att); i++) {
 			sleep(MIKRO_SEC(ud.step_time));
 			cur_att = fnLDA_GetAttenuation(1);
-			printf("cur_att %d\n", cur_att);
+			//printf("cur_att %d\n", cur_att);
 			fnLDA_SetAttenuation(id,
 				cur_att + ud.ramp_steps);
 		}
@@ -223,7 +229,7 @@ set_ramp(int id)
 		for(i = 0; i <= (ud.start_att - ud.end_att); i++) {
 			sleep(MIKRO_SEC(ud.step_time));
 			cur_att = fnLDA_GetAttenuation(1);
-			printf("cur_att %d\n", cur_att);
+			//printf("cur_att %d\n", cur_att);
 			fnLDA_SetAttenuation(id,
 				cur_att - ud.ramp_steps);
 		}
@@ -242,24 +248,28 @@ int
 set_attenuation(unsigned int id)
 {
 	if (ud.attenuation < fnLDA_GetMinAttenuation(id)) {
-		printf("%d is below minumal attenuation of %d\n",
-			ud.attenuation, fnLDA_GetMinAttenuation(id));
-		printf("attenuation has been set to %ddB\n", fnLDA_GetMinAttenuation(id));
+		printf("%.1f is below minumal attenuation of %.1f\n",
+			(double)ud.attenuation / 4,
+			(double)fnLDA_GetMinAttenuation(id) / 4);
+		printf("attenuation has been set to %.1fdB\n",
+			(double)fnLDA_GetMinAttenuation(id) / 4);
 		fnLDA_SetAttenuation(id, fnLDA_GetMinAttenuation(id));
 		sleep(MIKRO_SEC(ud.atime));
 		return 1;
 	}
 	if (ud.attenuation > fnLDA_GetMaxAttenuation(id)) {
 		printf("%d is above maximal attenuation of %d\n",
-			ud.attenuation, fnLDA_GetMaxAttenuation(id));
+			(double)ud.attenuation / 4,
+			(double)fnLDA_GetMaxAttenuation(id) / 4);
 		printf("attenuation has been set to %d\n",
-			fnLDA_GetMaxAttenuation(id));
+			(double)fnLDA_GetMaxAttenuation(id) / 4);
 		fnLDA_SetAttenuation(id, fnLDA_GetMaxAttenuation(id));
 		sleep(MIKRO_SEC(ud.atime));
 		return 1;
 	}
-	fnLDA_SetAttenuation(id, (ud.attenuation * 4));
-	printf("set device to %ddB attenuation\n", fnLDA_GetAttenuation(id));
+	fnLDA_SetAttenuation(id, (ud.attenuation));
+	printf("set device to %.1fdB attenuation\n",
+		(double)(fnLDA_GetAttenuation(id)/4));
 	sleep(MIKRO_SEC(ud.atime));
 	return 1;
 }
@@ -475,8 +485,8 @@ main(int argc, char *argv[])
 		}
 		else if (ud.file == 1)
 			read_file(ud.path, id);
-
-		fnLDA_SetAttenuation(id, 0);
+		if (ud.atime != 0)
+			fnLDA_SetAttenuation(id, 0);
 	}
 
 	/*
