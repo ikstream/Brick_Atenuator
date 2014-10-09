@@ -21,7 +21,7 @@ input.o: input.c input.h
 	$(CC) -o input.o -c input.c
 
 console: ldahid.o input.o control.o
-	$(CC) -o attenuator_lab_brick $(CFLAGS) ldahid.o input.o control.o
+	$(CC) -o attenuator_lab_brick  ldahid.o input.o control.o $(CFLAGS)
 
 gui: clean console lab_brick gui.o
 
