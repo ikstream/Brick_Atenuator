@@ -17,7 +17,9 @@ struct user_data
 	unsigned int step_time;
 	unsigned int simple;
 	unsigned int file;
+	unsigned int log;
 	char *path;
+	char *logfile;
 };
 
 int read_file(char *path, int id);
