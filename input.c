@@ -4,6 +4,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <time.h>
+#include <sys/time.h>
 #include "input.h"
 #include "LDAhid.h"
 
@@ -51,8 +53,8 @@ read_file(char *path, int id)
 	char line[LINE_LENGTH];
 	char atime[250];
 	char att[6];
-	
-	if(fopen(path, "r") == NULL){
+
+	if(fopen(path, "a") == NULL){
 		printf("fp == NULL\n");
 		return -1;
 	}
@@ -72,9 +74,40 @@ read_file(char *path, int id)
 }
 
 /*
+ * log the current change of attenuation to a file including
+ * a timestamp. Always append the file by default.
+ * <timestamp>,<attenuation>
+ */
+int
+log_attenuation(unsigned int att)
+{
+
+	if (ud.log != 1)
+		return 1;
+
+	FILE *fp;
+
+        fp = fopen(ud.logfile, "a");
+        if (fp == NULL) {
+                printf("unable to open logfile for writing: %s\n", ud.logfile);
+                return 2;
+        }
+
+	double real_att = (double) att / 4;
+        struct timespec ts;
+        clock_gettime (CLOCK_REALTIME, &ts);
+        fprintf (fp, "%u.%09u,", (unsigned int) ts.tv_sec, (unsigned int) ts.tv_nsec);
+        fprintf(fp, "%.1f\n", real_att); // attenuation
+
+        fclose( fp );
+
+	return 0;
+}
+
+/*
  * gets the command line parameters and sets userdata parameters
  */
-int 
+int
 get_parameters(int argc, char *argv[])
 {
 	int i;
@@ -129,18 +162,26 @@ get_parameters(int argc, char *argv[])
 		else if (strncmp(argv[i],"ms", strlen(argv[i])) == 0) {
 			ud.ms = 1;
 		}
-		
+
 		else if (strncmp(argv[i],"us", strlen(argv[i])) == 0) {
 			ud.us = 1;
 		}
+		else if (strncmp(argv[i], "-l", strlen(argv[i])) == 0) {
+			if ((i + 1) < argc) {
+				ud.logfile = argv[i + 1];
+				ud.log = 1;
+				printf("logging to file: %s", ud.logfile);
+			} else
+				printf("please specify a logfile filename\n");
+		}
 
-		else if(strncmp(argv[i], "-p", strlen(argv[i])) == 0) {	
+		else if(strncmp(argv[i], "-p", strlen(argv[i])) == 0) {
 			if (strncmp(argv[i + 1], "-ramp",
 			    strlen(argv[i + 1])) == 0)
 				ud.ramp = 1;
 			else if (strncmp(argv[i + 1], "-sine",
 			    strlen(argv[i + 1])) == 0)
-				ud.sine = 1;	
+				ud.sine = 1;
 			else if (strncmp(argv[i + 1],"-triangle",
 			    strlen(argv[i + 1])) == 0)
 				ud.triangle = 1;
@@ -217,4 +258,6 @@ clear_userdata(void)
 	ud.info = 0;
 	ud.runs = 1;
 	ud.path = "";
+	ud.log = 0;
+	ud.logfile = "";
 }

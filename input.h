@@ -22,7 +22,9 @@ struct user_data
 	unsigned int runs;
 	unsigned int ms;
 	unsigned int us;
+	unsigned int log;
 	char *path;
+	char *logfile;
 };
 
 int read_file(char *path, int id);
