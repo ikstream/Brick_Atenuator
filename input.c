@@ -118,6 +118,7 @@ get_parameters(int argc, char *argv[])
 	//TODO: check for order of arguments
 
 	//TODO: fix Problem if argv[i + 1] does not exist
+	/*
 	if (argc == 2){
 		if (strncmp(argv[1], "-i", strlen(argv[1])) != 0) {
 			printf("you are missing parameters for %s\n", argv[1]);
@@ -125,7 +126,7 @@ get_parameters(int argc, char *argv[])
 			return 0;
 		}
 	}
-
+	*/
 	for (i = 1; i < argc; i++) {
 		if (strncmp(argv[i], "-a", strlen(argv[i])) == 0) {
 			ud.simple = 1;
@@ -139,24 +140,55 @@ get_parameters(int argc, char *argv[])
 			ud.info = 1;
 
 		else if (strncmp(argv[i], "-t", strlen(argv[i])) == 0)
-			ud.atime = atoi(argv[i + 1]);
+			if ((i + 1) < argc)
+				ud.atime = atoi(argv[i + 1]);
+			else {
+				printf("You missed to set a time\n");
+				return 0;
+			}
 
 		else if (strncmp(argv[i], "-step", strlen(argv[i])) == 0)
-			ud.ramp_steps = (int)(atof(argv[i + 1]) * 4);
+			if ((i + 1) < argc)
+				ud.ramp_steps = (int)(atof(argv[i + 1]) * 4);
+			else {
+				printf("no attenuation steps set\n");
+				printf("Step size will be set to device minimum\n");
+				//TODO: set steps du resolution if none is set
+			}
 
 		else if (strncmp(argv[i], "-step_time", strlen(argv[i])) == 0)
-			ud.step_time = atoi(argv[i + 1]);
+			if ((i + 1) < argc)
+				ud.step_time = atoi(argv[i + 1]);
+			else{
+				printf("no steptime set\n");
+				printf("steptime set to: %d\n", ud.step_time);
+			}
 
 		else if (strncmp(argv[i], "-start", strlen(argv[i])) == 0)
-			ud.start_att = (int)(atof(argv[i + 1]) * 4);
+			if ((i + 1) < argc)
+				ud.start_att = (int)(atof(argv[i + 1]) * 4);
+			else {
+				printf("no start attenuation set\n");
+				return 0;
+			}
+
 
 		else if (strncmp(argv[i], "-end", strlen(argv[i])) == 0)
-			ud.end_att = (int)(atof(argv[i + 1]) * 4);
+			if ((i + 1) < argc)
+				ud.end_att = (int)(atof(argv[i + 1]) * 4);
+			else {
+				printf("no end attenuation set\n");
+				return 0;
+			}
 
 		else if (strncmp(argv[i],"-f", strlen(argv[i])) == 0) {
-			ud.path = argv[i + 1];
-			ud.file = 1;
-			i++;
+			if ((i + 1) < argc) {
+				ud.path = argv[i + 1];
+				ud.file = 1;
+			}
+			else {
+				printf("no file specified\n");
+			}
 		}
 
 		else if (strncmp(argv[i],"ms", strlen(argv[i])) == 0) {
@@ -192,11 +224,11 @@ get_parameters(int argc, char *argv[])
 		}
 
 		else if (strncmp(argv[i], "-rr", strlen(argv[i])) == 0) {
-			if ((i + 1) > argc) {
+			if ((i + 1) < argc)
+				ud.runs = atoi(argv[i+1]);
+			else {
 				ud.runs = 1;
-				return 1;
 			}
-			ud.runs = atoi(argv[i+1]);
 		}
 	}
 	return 1;
