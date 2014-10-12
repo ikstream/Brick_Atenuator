@@ -97,7 +97,7 @@ log_attenuation(unsigned int att)
         struct timespec ts;
         clock_gettime (CLOCK_REALTIME, &ts);
         fprintf (fp, "%u.%09u,", (unsigned int) ts.tv_sec, (unsigned int) ts.tv_nsec);
-        fprintf(fp, "%.1f\n", real_att); // attenuation
+        fprintf(fp, "%.2f\n", real_att); // attenuation
 
         fclose( fp );
 
@@ -214,22 +214,22 @@ print_userdata(void)
 		strncpy(tu ,"seconds\0", 20);
 
 	if (ud.simple == 1) {
-		printf("attenuation set to %.1fdB\n", (double)ud.attenuation / 4);
+		printf("attenuation set to %.2fdB\n", (double)ud.attenuation / 4);
 		if (ud.atime != 0)
 			printf("time for attenuation set to %d %s \n", ud.atime, tu);
 	}
 	if (ud.ramp == 1) {
 		printf("attenuation set to ramp\n");
-		printf("ramp steps set to %.1fdB\n", (double)ud.ramp_steps / 4);
-		printf("start attenuation set to %.1fdB\n", (double)ud.start_att / 4);
-		printf("end attenuation set to %.1fdB\n", (double)ud.end_att / 4);
+		printf("ramp steps set to %.2fdB\n", (double)ud.ramp_steps / 4);
+		printf("start attenuation set to %.2fdB\n", (double)ud.start_att / 4);
+		printf("end attenuation set to %.2fdB\n", (double)ud.end_att / 4);
 		printf("time per step set to %d %s\n", ud.step_time, tu);
 	}
 	if (ud.triangle == 1) {
 		printf("attenuation form set to both sided ramp\n");
-		printf("ramp steps set to %.1fdB\n", (double)ud.ramp_steps / 4);
-		printf("start attenuation set to %.1fdB\n", (double)ud.start_att / 4);
-		printf("maximal attenuation set to %.1fdB\n", (double)ud.end_att / 4);
+		printf("ramp steps set to %.2fdB\n", (double)ud.ramp_steps / 4);
+		printf("start attenuation set to %.2fdB\n", (double)ud.start_att / 4);
+		printf("maximal attenuation set to %.2fdB\n", (double)ud.end_att / 4);
 		printf("time per step set to %d %s\n", ud.step_time, tu);
 	}
 	if (ud.cont == 1)
