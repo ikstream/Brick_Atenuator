@@ -11,7 +11,7 @@ all: clean console lab_brick
 
 lab_brick: ldahid.o control.o input.o
 
-ldahid.o: LDAhid.c LDAhid.h 
+ldahid.o: LDAhid.c LDAhid.h
 	$(CC) -o ldahid.o -c LDAhid.c
 
 control.o: control.c control.h

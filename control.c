@@ -21,9 +21,9 @@ struct user_data ud;
 //TODO: write man page
 
 //TODO: currently only useable with one device at some points
-//even if it is possible to use several devices they will be handled 
+//even if it is possible to use several devices they will be handled
 //one after the other
-int 
+int
 get_serial_and_name(int device_count, unsigned int serial, char *device_name)
 {
 	DEVID id;
@@ -43,7 +43,7 @@ print_dev_info(int id)
 		(double)(fnLDA_GetAttenuation(id) / 4));
 }
 
-char * 
+char *
 get_device_data(unsigned int *working_devices, int nr_active_devices)
 {
 	char *success = "All data has been set correctly";
@@ -61,37 +61,37 @@ get_device_data(unsigned int *working_devices, int nr_active_devices)
 			    || status == DEVICE_NOT_READY)
 				return strncpy(errmsg ,fnLDA_perror(status),
 				     strlen(errmsg));
-		
+
 		status = fnLDA_GetMaxAttenuation(working_devices[id]);
 			if (status == INVALID_DEVID
 			    || status == DEVICE_NOT_READY)
 				return strncpy(errmsg ,fnLDA_perror(status),
 				     strlen(errmsg));
-		
+
 		status = fnLDA_GetIdleTime(working_devices[id]);
 			if (status == INVALID_DEVID
 			    || status == DEVICE_NOT_READY)
 				return strncpy(errmsg ,fnLDA_perror(status),
 				     strlen(errmsg));
-		
+
 		status = fnLDA_GetDwellTime(working_devices[id]);
 			if (status == INVALID_DEVID
 			    || status == DEVICE_NOT_READY)
 				return strncpy(errmsg ,fnLDA_perror(status),
 				     strlen(errmsg));
-		
+
 		status = fnLDA_GetAttenuationStep(working_devices[id]);
 			if (status == INVALID_DEVID
 			    || status == DEVICE_NOT_READY)
 				return strncpy(errmsg ,fnLDA_perror(status),
 				     strlen(errmsg));
-		
+
 		status = fnLDA_GetRF_On(working_devices[id]);
 			if (status == INVALID_DEVID
 			    || status == DEVICE_NOT_READY)
 				return strncpy(errmsg ,fnLDA_perror(status),
 				     strlen(errmsg));
-		
+
 		status = fnLDA_GetRampStart(working_devices[id]);
 			if (status == INVALID_DEVID
 			    || status == DEVICE_NOT_READY)
@@ -105,7 +105,7 @@ get_device_data(unsigned int *working_devices, int nr_active_devices)
 				     strlen(errmsg));
 	}
 	return success;
-	
+
 }
 
 void
@@ -162,7 +162,7 @@ call_help(void)
  * checks if attenutaion is outside of devices limits and sets
  * attenuation stepwise up or down to get a ramp
  */
-int 
+int
 set_ramp(int id)
 {
 	int i, cur_att;
@@ -278,7 +278,7 @@ set_ramp(int id)
  * user set attenuation is not above Max or below Min
  * attenuation of the Brick connected is and will sleep
  * for the time given by the user or the standard sleeptime
- * After the function leaves the attenuation will be reset 
+ * After the function leaves the attenuation will be reset
  * to 0 again.
  */
 int
@@ -494,7 +494,7 @@ set_triangle(unsigned int id)
 //TODO: implement set_sine function
 
 //TODO: add function to show max/min att, stepsize and other device infos
-int 
+int
 main(int argc, char *argv[])
 {
 	int device_count = 0;
@@ -503,10 +503,10 @@ main(int argc, char *argv[])
 	DEVID working_devices[MAXDEVICES];
 	char device_name[MAX_MODELNAME];
 	char *messages, *tmp, *version;
-	
+
 	//TODO: make input overflow safe
 	char *input = "";
-	
+
 	/* get the uid of caller */
 	uid_t uid = geteuid();
 	clear_userdata();
@@ -521,8 +521,8 @@ main(int argc, char *argv[])
 		return -1;
 	}
 	if ((strncmp(argv[1], "-h", strlen(argv[1]))) == 0) {
-		call_help();	
-		return 0;
+		call_help();
+		return 1;
 	}
 	if (!get_parameters(argc, argv)){
 		call_help();
@@ -531,13 +531,13 @@ main(int argc, char *argv[])
 	fnLDA_Init();
 	version = fnLDA_LibVersion();
 	fnLDA_SetTestMode(FALSE);
-	
-	//TODO: check in intervalls if connected devices have been 
-	//exchanged or disconnected 
+
+	//TODO: check in intervalls if connected devices have been
+	//exchanged or disconnected
 	device_count = fnLDA_GetNumDevices();
-	
+
 	printf("you are using libversion %s\n", version);
-	
+
 	if (device_count == 0)
 		printf("There is no attenuator connected\n");
 	else if (device_count > 1)
@@ -576,11 +576,10 @@ main(int argc, char *argv[])
 	messages = get_device_data(working_devices, nr_active_devices);
 	printf("%s\n", messages);
 	print_userdata();
-	
+
 	/*
 	 * Set device as specified by user
 	 */
-
 	for (id = 1; id <= nr_active_devices; id++) {
 		/* TODO implement sine_function which will set ramp form
 		  * in intervall maybe with steps and set one step a

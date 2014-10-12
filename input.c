@@ -22,7 +22,7 @@ struct user_data ud;
 /*
  * returns token on given place in .csv file
  */
-char* 
+char*
 get_entry(char* line, int entry)
 {
 	char* token;
@@ -38,7 +38,7 @@ get_entry(char* line, int entry)
  * follows the path to a given .csv file
  * and checks it for correct entries.
  * time is expected to be in the first entry followed by the
- * attenuation. 
+ * attenuation.
  */
 int
 read_file(char *path, int id)
