@@ -115,18 +115,6 @@ get_parameters(int argc, char *argv[])
 
 	//TODO: check for invalid input
 
-	//TODO: check for order of arguments
-
-	//TODO: fix Problem if argv[i + 1] does not exist
-	/*
-	if (argc == 2){
-		if (strncmp(argv[1], "-i", strlen(argv[1])) != 0) {
-			printf("you are missing parameters for %s\n", argv[1]);
-			printf("\r\nusage:\n");
-			return 0;
-		}
-	}
-	*/
 	for (i = 1; i < argc; i++) {
 		if (strncmp(argv[i], "-a", strlen(argv[i])) == 0) {
 			ud.simple = 1;
