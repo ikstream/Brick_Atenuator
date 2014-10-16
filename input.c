@@ -179,6 +179,11 @@ get_parameters(int argc, char *argv[])
 			}
 		}
 
+		else if (strncmp(argv[i],"s", strlen(argv[i])) == 0) {
+				ud.ms = 0;
+				ud.us = 0;
+		}
+
 		else if (strncmp(argv[i],"ms", strlen(argv[i])) == 0) {
 			ud.ms = 1;
 		}

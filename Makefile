@@ -7,7 +7,7 @@
 CC=gcc
 CFLAGS=-lm -lpthread -lusb -lrt
 
-all: clean console lab_brick
+all: clean_up console lab_brick clean
 
 lab_brick: ldahid.o control.o input.o
 
@@ -29,8 +29,10 @@ gui.o: control.o input.o lab_brick_gui.c
 	$(CC) -o gui.o $(pkg-config --cflags --libs gtk-3.0) -c lab_brick_gui.c
 
 clean:
-	rm -rf attenuator_lab_brick
 	rm -rf control.o
 	rm -rf input.o
 	rm -rf ldahid.o
 
+clean_up:
+	rm -rf attenuator_lab_brick
+	clean
