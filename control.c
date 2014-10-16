@@ -155,6 +155,12 @@ call_help(void)
 	printf("\t-rr <#runs>\n");
 	printf("\r\n");
 
+	printf("you can use s, ms and us to set time units\n");
+	printf("\ts -> seconds\n");
+	printf("\tms -> milliseconds\n");
+	printf("\tus -> mikroseconds\n");
+	printf("\r\n");
+
 	return;
 }
 
