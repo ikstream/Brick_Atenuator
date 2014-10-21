@@ -45,7 +45,6 @@ read_file(char *path, int id)
 {
 	//TODO: check if more then two entries in file
 
-	//TODO: check if file in path is a .csv file
 	int i = 0;
 	int isDigit = 0;
 	FILE *fp;

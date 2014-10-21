@@ -26,7 +26,7 @@ console: ldahid.o input.o control.o
 gui: clean console lab_brick gui.o
 
 gui.o: control.o input.o lab_brick_gui.c
-	$(CC) -o gui.o $(pkg-config --cflags --libs gtk-3.0) -c lab_brick_gui.c
+	$(CC) -o gui.o $(pkg-config --cflags --libs gtk+-3.0) -c lab_brick_gui.c
 
 clean:
 	rm -rf control.o
