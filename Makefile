@@ -7,7 +7,7 @@
 CC=gcc
 CFLAGS=-lm -lpthread -lusb -lrt
 
-all: clean_up console lab_brick clean
+all: clean_up clean console lab_brick clean
 
 lab_brick: ldahid.o control.o input.o
 
@@ -35,4 +35,3 @@ clean:
 
 clean_up:
 	rm -rf attenuator_lab_brick
-	clean

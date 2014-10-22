@@ -610,13 +610,13 @@ main(int argc, char *argv[])
 
 		else if (ud.sine && ud.cont) {
 			for(;;)
-				printf("blub\n");
+				printf("not implemented yet\n");
 				//set_sine(id);
 		}
 		else if (ud.sine && (ud.runs >= 1))
 			for(i = 0; i < ud.runs; i++)
 				//set_sine(id);
-				printf("blub\n");
+				printf("not implemented yet\n");
 
 		else if (ud.triangle && ud.cont) {
 			for(;;)
