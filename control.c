@@ -322,7 +322,7 @@ set_attenuation(unsigned int id)
 	fnLDA_SetAttenuation(id, (ud.attenuation));
 	log_attenuation( ud.attenuation );
 	printf("set device to %.2fdB attenuation\n",
-		(double)(fnLDA_GetAttenuation(id)/4));
+		(double)(fnLDA_GetAttenuation(id)) / 4);
 	if (ud.us == 1)
 		sleep(MIKRO_SEC(ud.atime));
 	else if(ud.ms == 1)
@@ -582,7 +582,7 @@ main(int argc, char *argv[])
 		printf("initialized device %d successfully\n", id + 1);
 		if (ud.info != 1)
 			printf("You can set attenuation steps in %.2fdB steps\n",
-				(double)(fnLDA_GetDevResolution(id)));
+				(double)(fnLDA_GetDevResolution(id + 1)) / 4);
 		else
 			print_dev_info(id);
 	}
