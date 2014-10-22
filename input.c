@@ -45,7 +45,6 @@ read_file(char *path, int id)
 {
 	//TODO: check if more then two entries in file
 
-	//TODO: check if file in path is a .csv file
 	int i = 0;
 	int isDigit = 0;
 	FILE *fp;
@@ -177,6 +176,11 @@ get_parameters(int argc, char *argv[])
 			else {
 				printf("no file specified\n");
 			}
+		}
+
+		else if (strncmp(argv[i],"s", strlen(argv[i])) == 0) {
+				ud.ms = 0;
+				ud.us = 0;
 		}
 
 		else if (strncmp(argv[i],"ms", strlen(argv[i])) == 0) {
