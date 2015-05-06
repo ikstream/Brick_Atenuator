@@ -12,6 +12,7 @@
 #define TRUE !FALSE
 #define STRING_LENGTH 12
 #define SLEEP_TIME 1000000
+#define MAX_USLEEP_TIME 1000000
 #define LINE_LENGTH 256
 #define TIME 1
 #define ATT 2
@@ -34,6 +35,24 @@ get_serial_and_name(int device_count, unsigned int serial, char *device_name)
 		printf("%s with serial number %d\n", device_name, serial);
 	}
 	return 1;
+}
+
+/**
+ * use usleep in a safe way for systems not supporting more than 1,000,000
+ * microseconds for usleep
+ */
+int
+susleep(unsigned long usec)
+{
+	int res;
+	unsigned long timeleft = usec;
+	while (timeleft > MAX_USLEEP_TIME) {
+		res = usleep(MAX_USLEEP_TIME);
+		if (res != 0)
+			return res;
+		timeleft -= MAX_USLEEP_TIME;
+	}
+	return usleep(timeleft); // remaining time
 }
 
 int
@@ -211,11 +230,11 @@ set_ramp(int id)
 			log_attenuation( ud.start_att );
 			for(i = 0; i <= (ud.end_att - ud.start_att); i++) {
 				if (ud.us == 1)
-					sleep(MIKRO_SEC(ud.atime));
+					susleep(TIME_MICROS(ud.atime));
 				else if(ud.ms == 1)
-					sleep(MILLI_SEC(ud.atime));
+					susleep(TIME_MILLIS(ud.atime));
 				else
-					sleep(ud.atime);
+					susleep(TIME_SECONDS(ud.atime));
 				cur_att = fnLDA_GetAttenuation(id);
 				//printf("cur_att %d\n", cur_att);
 				fnLDA_SetAttenuation(id,
@@ -230,11 +249,11 @@ set_ramp(int id)
 			log_attenuation( ud.start_att );
 			for(i = 0; i <= (ud.start_att - ud.end_att); i++) {
 				if (ud.us == 1)
-					sleep(MIKRO_SEC(ud.atime));
+					susleep(TIME_MICROS(ud.atime));
 				else if(ud.ms == 1)
-					sleep(MILLI_SEC(ud.atime));
+					susleep(TIME_MILLIS(ud.atime));
 				else
-					sleep(ud.atime);
+					susleep(TIME_SECONDS(ud.atime));
 				cur_att = fnLDA_GetAttenuation(id);
 				//printf("cur_att %d\n", cur_att);
 				fnLDA_SetAttenuation(id,
@@ -248,11 +267,11 @@ set_ramp(int id)
 		log_attenuation( ud.start_att );
 		for(i = 0; i <= (ud.end_att - ud.start_att); i++) {
 			if (ud.us == 1)
-				sleep(MIKRO_SEC(ud.atime));
+				susleep(TIME_MICROS(ud.atime));
 			else if(ud.ms == 1)
-				sleep(MILLI_SEC(ud.atime));
+				susleep(TIME_MILLIS(ud.atime));
 			else
-				sleep(ud.atime);
+				susleep(TIME_SECONDS(ud.atime));
 			cur_att = fnLDA_GetAttenuation(id);
 			//printf("cur_att %d\n", cur_att);
 			fnLDA_SetAttenuation(id,
@@ -265,11 +284,11 @@ set_ramp(int id)
 		log_attenuation( ud.start_att );
 		for(i = 0; i <= (ud.start_att - ud.end_att); i++) {
 			if (ud.us == 1)
-				sleep(MIKRO_SEC(ud.atime));
+				susleep(TIME_MICROS(ud.atime));
 			else if(ud.ms == 1)
-				sleep(MILLI_SEC(ud.atime));
+				susleep(TIME_MILLIS(ud.atime));
 			else
-				sleep(ud.atime);
+				susleep(TIME_SECONDS(ud.atime));
 			cur_att = fnLDA_GetAttenuation(id);
 			//printf("cur_att %d\n", cur_att);
 			fnLDA_SetAttenuation(id,
@@ -299,11 +318,11 @@ set_attenuation(unsigned int id)
 		fnLDA_SetAttenuation(id, fnLDA_GetMinAttenuation(id));
 		log_attenuation( fnLDA_GetMinAttenuation(id) );
 		if (ud.us == 1)
-			sleep(MIKRO_SEC(ud.atime));
+			susleep(TIME_MICROS(ud.atime));
 		else if(ud.ms == 1)
-			sleep(MILLI_SEC(ud.atime));
+			susleep(TIME_MILLIS(ud.atime));
 		else
-			sleep(ud.atime);
+			susleep(TIME_SECONDS(ud.atime));
 		return 1;
 	}
 
@@ -317,11 +336,11 @@ set_attenuation(unsigned int id)
 		log_attenuation( fnLDA_GetMaxAttenuation(id) );
 
 		if (ud.us == 1)
-			sleep(MIKRO_SEC(ud.atime));
+			susleep(TIME_MICROS(ud.atime));
 		else if(ud.ms == 1)
-			sleep(MILLI_SEC(ud.atime));
+			susleep(TIME_MILLIS(ud.atime));
 		else
-			sleep(ud.atime);
+			susleep(TIME_SECONDS(ud.atime));
 		return 1;
 	}
 
@@ -330,11 +349,11 @@ set_attenuation(unsigned int id)
 	printf("set device to %.2fdB attenuation\n",
 		(double)(fnLDA_GetAttenuation(id)) / 4);
 	if (ud.us == 1)
-		sleep(MIKRO_SEC(ud.atime));
+		susleep(TIME_MICROS(ud.atime));
 	else if(ud.ms == 1)
-		sleep(MILLI_SEC(ud.atime));
+		susleep(TIME_MILLIS(ud.atime));
 	else
-		sleep(ud.atime);
+		susleep(TIME_SECONDS(ud.atime));
 	return 1;
 }
 
@@ -385,11 +404,11 @@ set_triangle(unsigned int id)
 		for(;;) {
 			for (i = 1; i <= (ud.end_att - ud.start_att); i++) {
 				if (ud.us == 1)
-					sleep(MIKRO_SEC(ud.atime));
+					susleep(TIME_MICROS(ud.atime));
 				else if(ud.ms == 1)
-					sleep(MILLI_SEC(ud.atime));
+					susleep(TIME_MILLIS(ud.atime));
 				else
-					sleep(ud.atime);
+					susleep(TIME_SECONDS(ud.atime));
 				cur_att = fnLDA_GetAttenuation(id);
 				printf("attenuation set to %.2fdB\n",
 					((double)cur_att) / 4);
@@ -399,11 +418,11 @@ set_triangle(unsigned int id)
 			}
 			for (i = ud.end_att; i > (ud.end_att - ud.start_att); i--) {
 				if (ud.us == 1)
-					sleep(MIKRO_SEC(ud.atime));
+					susleep(TIME_MICROS(ud.atime));
 				else if(ud.ms == 1)
-					sleep(MILLI_SEC(ud.atime));
+					susleep(TIME_MILLIS(ud.atime));
 				else
-					sleep(ud.atime);
+					susleep(TIME_SECONDS(ud.atime));
 				cur_att = fnLDA_GetAttenuation(id);
 				printf("attenuation set to %.2fdB\n",
 					((double)cur_att) / 4);
@@ -418,11 +437,11 @@ set_triangle(unsigned int id)
 	if (ud.start_att < ud.end_att) {
 		for (i = 1; i <= (ud.end_att - ud.start_att); i++) {
 			if (ud.us == 1)
-				sleep(MIKRO_SEC(ud.atime));
+				susleep(TIME_MICROS(ud.atime));
 			else if(ud.ms == 1)
-				sleep(MILLI_SEC(ud.atime));
+				susleep(TIME_MILLIS(ud.atime));
 			else
-				sleep(ud.atime);
+				susleep(TIME_SECONDS(ud.atime));
 			cur_att = fnLDA_GetAttenuation(id);
 			printf("attenuation set to %.2fdB\n",
 				((double)cur_att) / 4);
@@ -431,11 +450,11 @@ set_triangle(unsigned int id)
 		}
 		for (i = ud.end_att; i > (ud.end_att - ud.start_att); i--) {
 			if (ud.us == 1)
-				sleep(MIKRO_SEC(ud.atime));
+				susleep(TIME_MICROS(ud.atime));
 			else if(ud.ms == 1)
-				sleep(MILLI_SEC(ud.atime));
+				susleep(TIME_MILLIS(ud.atime));
 			else
-				sleep(ud.atime);
+				susleep(TIME_SECONDS(ud.atime));
 			cur_att = fnLDA_GetAttenuation(id);
 			printf("attenuation set to %.2fdB\n",
 				((double)cur_att) / 4);
@@ -449,11 +468,11 @@ set_triangle(unsigned int id)
 		for(;;) {
 			for (i = 0; i < (ud.start_att - ud.end_att); i++) {
 				if (ud.us == 1)
-					sleep(MIKRO_SEC(ud.atime));
+					susleep(TIME_MICROS(ud.atime));
 				else if(ud.ms == 1)
-					sleep(MILLI_SEC(ud.atime));
+					susleep(TIME_MILLIS(ud.atime));
 				else
-					sleep(ud.atime);
+					susleep(TIME_SECONDS(ud.atime));
 				cur_att = fnLDA_GetAttenuation(id);
 				printf("attenuation set to %.2fdB\n",
 					((double)cur_att) / 4);
@@ -463,11 +482,11 @@ set_triangle(unsigned int id)
 			}
 			for (i = 1; i <= (ud.start_att - ud.end_att); i++) {
 				if (ud.us == 1)
-					sleep(MIKRO_SEC(ud.atime));
+					susleep(TIME_MICROS(ud.atime));
 				else if(ud.ms == 1)
-					sleep(MILLI_SEC(ud.atime));
+					susleep(TIME_MILLIS(ud.atime));
 				else
-					sleep(ud.atime);
+					susleep(TIME_SECONDS(ud.atime));
 				cur_att = fnLDA_GetAttenuation(id);
 				printf("attenuation set to %.2fdB\n",
 					((double)cur_att) / 4);
@@ -482,11 +501,11 @@ set_triangle(unsigned int id)
 	if (ud.start_att > ud.end_att) {
 		for (i = 0; i < (ud.start_att - ud.end_att); i++) {
 			if (ud.us == 1)
-				sleep(MIKRO_SEC(ud.atime));
+				susleep(TIME_MICROS(ud.atime));
 			else if(ud.ms == 1)
-				sleep(MILLI_SEC(ud.atime));
+				susleep(TIME_MILLIS(ud.atime));
 			else
-				sleep(ud.atime);
+				susleep(TIME_SECONDS(ud.atime));
 			cur_att = fnLDA_GetAttenuation(id);
 			printf("attenuation set to %.2fdB\n",
 				((double)cur_att) / 4);
@@ -495,11 +514,11 @@ set_triangle(unsigned int id)
 		}
 		for (i = 1; i <= (ud.start_att - ud.end_att); i++) {
 			if (ud.us == 1)
-				sleep(MIKRO_SEC(ud.atime));
+				susleep(TIME_MICROS(ud.atime));
 			else if(ud.ms == 1)
-				sleep(MILLI_SEC(ud.atime));
+				susleep(TIME_MILLIS(ud.atime));
 			else
-				sleep(ud.atime);
+				susleep(TIME_SECONDS(ud.atime));
 			cur_att = fnLDA_GetAttenuation(id);
 			printf("attenuation set to %.2fdB\n",
 				((double)cur_att) / 4);

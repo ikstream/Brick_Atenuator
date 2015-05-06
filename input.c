@@ -61,7 +61,7 @@ read_file(char *path, int id)
 
 	while (fgets(line, LINE_LENGTH, fp)) {
 		tmp = strdup(line);
-		ud.atime = atoi(get_entry(tmp, TIME));
+		ud.atime = atol(get_entry(tmp, TIME));
 		tmp = strdup(line);
 		ud.attenuation = (int)(atof(get_entry(tmp, ATT))* 4);
 		set_attenuation(id);
@@ -128,7 +128,7 @@ get_parameters(int argc, char *argv[])
 
 		else if (strncmp(argv[i], "-t", strlen(argv[i])) == 0)
 			if ((i + 1) < argc)
-				ud.atime = atoi(argv[i + 1]);
+				ud.atime = atol(argv[i + 1]);
 			else {
 				printf("You missed to set a time\n");
 				return 0;
@@ -240,7 +240,7 @@ print_userdata(void)
 	if (ud.simple == 1) {
 		printf("attenuation set to %.2fdB\n", (double)ud.attenuation / 4);
 		if (ud.atime != 0)
-			printf("time for attenuation set to %d %s \n", ud.atime, tu);
+			printf("time for attenuation set to %ld %s \n", ud.atime, tu);
 	}
 	if (ud.ramp == 1) {
 		printf("attenuation set to ramp\n");

@@ -1,12 +1,13 @@
 #ifndef _INPUT_H_
 #define _INPUT_H_
 
-#define MIKRO_SEC(step_time) ((1 * step_time) / 1000000)
-#define MILLI_SEC(step_time) ((1 * step_time) / 1000)
+#define TIME_MICROS(step_time) (step_time)
+#define TIME_MILLIS(step_time) (step_time * 1000)
+#define TIME_SECONDS(step_time) (step_time * 1000000)
 
 struct user_data
 {
-	unsigned int atime;
+	unsigned long atime;
 	unsigned int attenuation;
 	unsigned int start_att;
 	unsigned int end_att;
