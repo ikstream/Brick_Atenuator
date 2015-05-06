@@ -53,11 +53,12 @@ read_file(char *path, int id)
 	char atime[250];
 	char att[6];
 
-	if(fopen(path, "a") == NULL){
-		printf("fp == NULL\n");
+	fp = fopen(path, "r");
+
+	if (fp == NULL) {
+                printf("unable to open input file for reading: %s\n", path);
 		return -1;
 	}
-	fp = fopen(path, "r");
 
 	while (fgets(line, LINE_LENGTH, fp)) {
 		tmp = strdup(line);
@@ -69,7 +70,7 @@ read_file(char *path, int id)
 	}
 
 	fclose(fp);
-	return 1;
+	return 0;
 }
 
 /*

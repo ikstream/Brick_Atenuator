@@ -542,6 +542,7 @@ main(int argc, char *argv[])
 	DEVID working_devices[MAXDEVICES];
 	char device_name[MAX_MODELNAME];
 	char *messages, *tmp, *version;
+	int res;
 
 	//TODO: make input overflow safe
 	char *input = "";
@@ -654,12 +655,14 @@ main(int argc, char *argv[])
 				set_ramp(id);
 
 		else if (ud.file && ud.cont) {
-			for(;;)
-				read_file(ud.path, id);
+			res = 0;
+			while (res == 0)
+				res = read_file(ud.path, id);
 		}
 		else if (ud.file && ud.runs >= 1)
-			for(i = 0; i < ud.runs; i++)
-				read_file(ud.path, id);
+			res = 0;
+			while (res == 0)
+				res = read_file(ud.path, id);
 
 		if (ud.atime != 0) {
 			fnLDA_SetAttenuation(id, 0);
